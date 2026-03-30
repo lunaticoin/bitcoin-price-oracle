@@ -8,6 +8,7 @@ COPY Cargo.toml Cargo.lock ./
 COPY src/ src/
 COPY static/ static/
 COPY logo.svg favicon.png ./
+COPY static/fonts/ static/fonts/
 
 RUN cargo build --release --locked
 

@@ -65,15 +65,45 @@ pub struct RangeParams {
     pub to: String,
 }
 
+#[derive(Deserialize)]
+pub struct ChartParams {
+    #[serde(default = "default_points")]
+    pub points: usize,
+}
+
+fn default_points() -> usize {
+    600
+}
+
 const INDEX_HTML: &str = include_str!("../static/index.html");
 const FAVICON_PNG: &[u8] = include_bytes!("../favicon.png");
+
+const FONT_CINZEL_DEC: &[u8] = include_bytes!("../static/fonts/cinzel-decorative-400.woff2");
+const FONT_CINZEL_400: &[u8] = include_bytes!("../static/fonts/cinzel-400.woff2");
+const FONT_CINZEL_700: &[u8] = include_bytes!("../static/fonts/cinzel-700.woff2");
+const FONT_CORMORANT: &[u8] = include_bytes!("../static/fonts/cormorant-400.woff2");
+const FONT_CORMORANT_I: &[u8] = include_bytes!("../static/fonts/cormorant-400i.woff2");
+const FONT_CORMORANT_600: &[u8] = include_bytes!("../static/fonts/cormorant-600.woff2");
+const FONT_JBMONO_400: &[u8] = include_bytes!("../static/fonts/jetbrains-400.woff2");
+const FONT_JBMONO_500: &[u8] = include_bytes!("../static/fonts/jetbrains-500.woff2");
+
+const WOFF2: &str = "font/woff2";
 
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/", get(serve_index))
         .route("/favicon.png", get(serve_favicon))
+        .route("/fonts/cinzel-decorative-400.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CINZEL_DEC) }))
+        .route("/fonts/cinzel-400.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CINZEL_400) }))
+        .route("/fonts/cinzel-700.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CINZEL_700) }))
+        .route("/fonts/cormorant-400.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CORMORANT) }))
+        .route("/fonts/cormorant-400i.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CORMORANT_I) }))
+        .route("/fonts/cormorant-600.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CORMORANT_600) }))
+        .route("/fonts/jetbrains-400.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_JBMONO_400) }))
+        .route("/fonts/jetbrains-500.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_JBMONO_500) }))
         .route("/api/price/latest", get(get_latest_price))
         .route("/api/price/date/{date}", get(get_price_at_date))
+        .route("/api/price/chart", get(get_chart_data))
         .route("/api/price/range", get(get_price_range))
         .route("/api/price/{height}", get(get_price_at_height))
         .route("/health", get(health_check))
@@ -234,6 +264,54 @@ async fn get_price_range(
             timestamp: ts,
         })
         .collect();
+
+    Json(entries).into_response()
+}
+
+async fn get_chart_data(
+    Query(params): Query<ChartParams>,
+    State(s): State<AppState>,
+) -> impl IntoResponse {
+    let points = params.points.min(2000).max(10);
+    let last = match s.store.last_height() {
+        Some(h) => h,
+        None => {
+            return Json(Vec::<RangeEntry>::new()).into_response();
+        }
+    };
+
+    let start = 550_000usize;
+    if last <= start {
+        return Json(Vec::<RangeEntry>::new()).into_response();
+    }
+
+    let total = last - start;
+    let step = total / points;
+    let step = step.max(1);
+
+    let mut entries = Vec::with_capacity(points + 1);
+    let mut h = start;
+    while h <= last {
+        if let (Some(price), Some(ts)) = (s.store.get_price(h), s.store.get_timestamp(h)) {
+            entries.push(RangeEntry {
+                height: h,
+                price_usd: round_price(price),
+                timestamp: ts,
+            });
+        }
+        h += step;
+    }
+
+    // Always include the latest point
+    if entries.last().map(|e| e.height) != Some(last) {
+        if let (Some(price), Some(ts)) = (s.store.get_price(last), s.store.get_timestamp(last)) {
+            entries.push(RangeEntry {
+                height: last,
+                price_usd: round_price(price),
+                timestamp: ts,
+            });
+        }
+    }
 
     Json(entries).into_response()
 }

@@ -5,9 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>El Oráculo</title>
 <link rel="icon" type="image/png" href="/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ─── FIX 1: Self-hosted fonts (no Google) ─── */
+@font-face { font-family: 'Cinzel Decorative'; src: url('/fonts/cinzel-decorative-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Cinzel'; src: url('/fonts/cinzel-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Cinzel'; src: url('/fonts/cinzel-700.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('/fonts/cormorant-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('/fonts/cormorant-400i.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('/fonts/cormorant-600.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'JetBrains Mono'; src: url('/fonts/jetbrains-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'JetBrains Mono'; src: url('/fonts/jetbrains-500.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
@@ -28,7 +36,6 @@
   --purple-glow: rgba(123,94,167,0.15);
   --crimson: #a84040;
   --emerald: #5a9a6a;
-  --crystal: rgba(180,200,255,0.6);
   --font-display: 'Cinzel Decorative', 'Cinzel', serif;
   --font-heading: 'Cinzel', serif;
   --font-body: 'Cormorant Garamond', 'Georgia', serif;
@@ -45,7 +52,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ─── STARFIELD BG ─── */
+/* ─── STARFIELD ─── */
 body::before {
   content: '';
   position: fixed;
@@ -62,21 +69,25 @@ body::before {
     radial-gradient(1px 1px at 25% 45%, rgba(228,199,107,0.15) 0%, transparent 100%),
     radial-gradient(1px 1px at 65% 55%, rgba(180,200,255,0.15) 0%, transparent 100%),
     radial-gradient(1px 1px at 85% 70%, rgba(228,199,107,0.2) 0%, transparent 100%),
-    radial-gradient(1px 1px at 5% 50%, rgba(180,200,255,0.2) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 55% 90%, rgba(228,199,107,0.25) 0%, transparent 100%),
-    radial-gradient(1px 1px at 35% 5%, rgba(180,200,255,0.3) 0%, transparent 100%),
-    radial-gradient(1px 1px at 95% 95%, rgba(228,199,107,0.15) 0%, transparent 100%);
+    radial-gradient(1px 1px at 5% 50%, rgba(180,200,255,0.2) 0%, transparent 100%);
   pointer-events: none;
   z-index: 0;
   animation: twinkle 8s ease-in-out infinite alternate;
 }
+@keyframes twinkle { 0% { opacity: 0.6; } 100% { opacity: 1; } }
 
-@keyframes twinkle {
-  0% { opacity: 0.6; }
-  100% { opacity: 1; }
+/* ─── FIX 3: Skeleton loading ─── */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--deep) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  color: transparent !important;
+  display: inline-block;
+  min-width: 60px;
 }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-/* ─── LAYOUT ─── */
 .scroll { position: relative; z-index: 1; }
 
 .container {
@@ -85,14 +96,20 @@ body::before {
   padding: 0 24px;
 }
 
-/* ─── ORNAMENTAL BORDER ─── */
-.ornament {
-  text-align: center;
-  color: var(--gold-dim);
-  font-size: 14px;
-  letter-spacing: 0.5em;
+/* ─── DIVIDERS ─── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   padding: 8px 0;
-  opacity: 0.5;
+  color: var(--gold-dim);
+  font-size: 13px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-glow), transparent);
 }
 
 /* ─── NAV ─── */
@@ -106,20 +123,17 @@ body::before {
 
 .nav-title {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 15px;
   letter-spacing: 0.08em;
   color: var(--gold);
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
+.nav-links { display: flex; align-items: center; gap: 20px; }
 
+/* FIX 4: Touch targets 44px min */
 .nav-link {
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-dim);
@@ -128,20 +142,37 @@ body::before {
   cursor: pointer;
   font-weight: 400;
   transition: color 0.3s;
+  padding: 10px 4px;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
 }
 .nav-link:hover, .nav-link.active { color: var(--gold); }
+
+/* FIX 6: Plain-language hint under nav labels */
+.nav-hint {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
 
 .nav-status {
   display: flex;
   align-items: center;
   gap: 6px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 13px;
   color: var(--text-dim);
 }
 
 .status-orb {
-  width: 6px; height: 6px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--emerald);
   box-shadow: 0 0 6px rgba(90,154,106,0.5);
@@ -153,10 +184,19 @@ body::before {
 }
 @keyframes orbPulse { 50% { opacity: 0.3; box-shadow: 0 0 12px rgba(201,168,76,0.8); } }
 
-/* ─── CRYSTAL BALL / HERO ─── */
+/* ─── HERO ─── */
 .hero {
   text-align: center;
   padding: 48px 0 40px;
+}
+
+.hero-subtitle {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  margin-bottom: 20px;
 }
 
 .crystal-ball {
@@ -175,6 +215,14 @@ body::before {
     inset 0 0 60px rgba(0,0,0,0.5),
     inset 0 -20px 40px rgba(123,94,167,0.08);
   overflow: hidden;
+  transition: box-shadow 0.5s;
+}
+.crystal-ball:hover {
+  box-shadow:
+    0 0 80px rgba(123,94,167,0.2),
+    0 0 150px rgba(201,168,76,0.06),
+    inset 0 0 60px rgba(0,0,0,0.5),
+    inset 0 -20px 40px rgba(123,94,167,0.12);
 }
 
 .crystal-ball::before {
@@ -213,7 +261,6 @@ body::before {
   color: var(--gold-bright);
   text-shadow: 0 0 20px rgba(228,199,107,0.3);
   line-height: 1.1;
-  letter-spacing: -0.01em;
 }
 .crystal-price-value .dollar {
   font-size: 0.7em;
@@ -223,28 +270,40 @@ body::before {
 
 .crystal-change {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   margin-top: 6px;
 }
 .crystal-change.up { color: var(--emerald); }
 .crystal-change.down { color: var(--crimson); }
 
+/* FIX 10: Improved pedestal */
 .crystal-base {
-  width: 100px;
-  height: 20px;
-  margin: -6px auto 0;
-  background: linear-gradient(to bottom, var(--gold-dim) 0%, #5a4a20 100%);
+  width: 90px;
+  height: 12px;
+  margin: -8px auto 0;
+  background: linear-gradient(to bottom, var(--gold-dim) 0%, #3a3018 100%);
   border-radius: 0 0 50% 50% / 0 0 100% 100%;
-  opacity: 0.4;
+  position: relative;
+}
+.crystal-base::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 6px;
+  background: linear-gradient(to bottom, #3a3018, var(--deep));
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  opacity: 0.7;
 }
 
-.hero-subtitle {
-  font-family: var(--font-heading);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--text-dim);
+.hero-tagline {
+  font-family: var(--font-body);
+  font-size: 17px;
+  color: var(--text);
   margin-top: 20px;
+  font-style: italic;
 }
 
 .hero-inscription {
@@ -259,35 +318,20 @@ body::before {
   display: flex;
   justify-content: center;
   gap: 24px;
-  margin-top: 16px;
+  margin-top: 14px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-dim);
 }
-
 .hero-meta span { display: flex; align-items: center; gap: 4px; }
-
-.glyph { color: var(--gold-dim); font-size: 13px; }
-
-/* ─── DIVIDER ─── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 4px 0;
-  color: var(--gold-dim);
-  font-size: 10px;
-}
-.divider::before, .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--border-glow), transparent);
-}
+.glyph { color: var(--gold-dim); font-size: 14px; }
 
 /* ─── CHART ─── */
+/* FIX 11: Visual energy below fold */
 .chart-section {
   padding: 24px 0;
+  border-left: 2px solid var(--border-glow);
+  padding-left: 20px;
 }
 
 .chart-header {
@@ -299,7 +343,7 @@ body::before {
 
 .chart-title {
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-dim);
@@ -307,15 +351,17 @@ body::before {
 
 .tf-group { display: flex; gap: 2px; }
 
+/* FIX 4: 44px touch targets */
 .tf-btn {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text-dim);
   font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 4px 10px;
+  font-size: 13px;
+  padding: 8px 14px;
+  min-height: 44px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .tf-btn:hover { border-color: var(--border-glow); color: var(--text); }
 .tf-btn.active { border-color: var(--gold-dim); color: var(--gold); background: var(--gold-bg); }
@@ -326,8 +372,8 @@ body::before {
   border: 1px solid var(--border);
   background: linear-gradient(180deg, rgba(26,21,48,0.5) 0%, rgba(12,10,20,0.8) 100%);
   padding: 12px 12px 4px;
+  box-shadow: 0 0 40px rgba(123,94,167,0.04), inset 0 1px 0 var(--border-glow);
 }
-
 .chart-wrap canvas { display: block; width: 100%; }
 
 .chart-tooltip {
@@ -336,66 +382,68 @@ body::before {
   background: var(--abyss);
   border: 1px solid var(--border-glow);
   padding: 8px 12px;
-  font-size: 13px;
+  font-size: 14px;
   opacity: 0;
   transition: opacity 0.15s;
   z-index: 10;
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 .chart-tooltip.visible { opacity: 1; }
-.tt-price { font-family: var(--font-heading); color: var(--gold-bright); font-size: 15px; }
-.tt-date { color: var(--text-dim); font-family: var(--font-body); margin-top: 2px; font-size: 12px; }
-.tt-block { color: var(--text-dim); font-family: var(--font-mono); font-size: 10px; }
+.tt-price { font-family: var(--font-heading); color: var(--gold-bright); font-size: 16px; }
+.tt-date { color: var(--text-dim); font-family: var(--font-body); margin-top: 2px; font-size: 14px; }
+.tt-block { color: var(--text-dim); font-family: var(--font-mono); font-size: 13px; }
 
 .chart-crosshair {
-  position: absolute;
-  top: 0;
-  width: 1px;
-  height: 100%;
+  position: absolute; top: 0; width: 1px; height: 100%;
   background: linear-gradient(to bottom, transparent, var(--gold-dim), transparent);
-  opacity: 0;
-  pointer-events: none;
+  opacity: 0; pointer-events: none;
 }
 .chart-crosshair.visible { opacity: 0.4; }
 
 .chart-dot {
-  position: absolute;
-  width: 8px; height: 8px;
-  background: var(--gold);
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0;
+  position: absolute; width: 8px; height: 8px;
+  background: var(--gold); border-radius: 50%;
+  pointer-events: none; opacity: 0;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 10px rgba(201,168,76,0.5);
 }
 .chart-dot.visible { opacity: 1; }
 
-/* ─── SCRYING (SEARCH) ─── */
+/* ─── SEARCH ─── */
+/* FIX 11: Border accent */
 .scrying {
   padding: 24px 0;
+  border-left: 2px solid var(--border-glow);
+  padding-left: 20px;
 }
 
 .scrying-title {
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+/* FIX 6: Plain language subtitle */
+.section-hint {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-dim);
+  font-style: italic;
   margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .scrying-box {
   display: flex;
   border: 1px solid var(--border);
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 .scrying-box:focus-within { border-color: var(--border-glow); box-shadow: 0 0 20px rgba(123,94,167,0.08); }
 
 .scrying-symbol {
-  padding: 10px 14px;
+  padding: 12px 14px;
   color: var(--gold-dim);
   font-family: var(--font-display);
   font-size: 16px;
@@ -411,26 +459,40 @@ body::before {
   border: none;
   color: var(--text);
   font-family: var(--font-mono);
-  font-size: 13px;
-  padding: 10px 14px;
+  font-size: 14px;
+  padding: 12px 14px;
   outline: none;
+  min-height: 44px;
 }
 .scrying-input::placeholder { color: var(--text-dim); font-style: italic; font-family: var(--font-body); }
 
+/* FIX 4: Touch target */
 .scrying-invoke {
   background: none;
   border: none;
   border-left: 1px solid var(--border);
   color: var(--gold-dim);
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 10px 20px;
+  padding: 12px 20px;
+  min-height: 44px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .scrying-invoke:hover { color: var(--gold); background: var(--gold-bg); }
+.scrying-invoke:active { transform: scale(0.97); }
+
+/* FIX 7: Format hint */
+.scrying-hint {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  font-style: italic;
+  opacity: 0.7;
+}
 
 .scrying-result {
   margin-top: 12px;
@@ -440,12 +502,12 @@ body::before {
   display: none;
   text-align: center;
 }
-.scrying-result.visible { display: block; animation: reveal 0.5s ease; }
-.scrying-result.error { border-color: rgba(168,64,64,0.3); }
+.scrying-result.visible { display: block; animation: reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 30px rgba(201,168,76,0.05); border-color: var(--border-glow); }
+.scrying-result.error { border-color: rgba(168,64,64,0.3); box-shadow: none; }
 .scrying-result.error .sr-meta { color: var(--crimson); }
 
 @keyframes reveal {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -458,7 +520,7 @@ body::before {
 }
 .sr-meta {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-dim);
   display: flex;
   justify-content: center;
@@ -475,7 +537,7 @@ body::before {
   padding: 20px;
   border: 1px solid var(--border);
   background: rgba(26,21,48,0.3);
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text);
   line-height: 1.7;
   margin-bottom: 24px;
@@ -483,67 +545,67 @@ body::before {
 }
 .grimoire-intro b { color: var(--gold); font-style: normal; }
 
+/* FIX 11: Hover lift on spell blocks */
 .spell-block {
   border: 1px solid var(--border);
   margin-bottom: 16px;
   padding: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
+.spell-block:hover { border-color: var(--border-glow); box-shadow: 0 0 20px rgba(123,94,167,0.06); }
 
-.spell-header {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 8px;
-}
+.spell-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.spell-method { font-family: var(--font-heading); font-size: 13px; letter-spacing: 0.1em; color: var(--gold); }
+.spell-path { font-family: var(--font-mono); font-size: 14px; color: var(--text); }
+.spell-desc { font-size: 15px; color: var(--text-dim); margin-bottom: 10px; font-style: italic; }
 
-.spell-method {
-  font-family: var(--font-heading);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--gold);
-}
-
-.spell-path {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--text);
-}
-
-.spell-desc {
-  font-size: 14px;
-  color: var(--text-dim);
-  margin-bottom: 10px;
-  font-style: italic;
-}
-
+/* FIX 12: Copy button */
+.spell-example-wrap { position: relative; }
 .spell-example {
   padding: 10px 14px;
   background: var(--void);
   border: 1px solid var(--border);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-dim);
   overflow-x: auto;
   white-space: pre;
   line-height: 1.6;
 }
+.copy-btn {
+  position: absolute;
+  top: 6px; right: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--gold-dim);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 4px 10px;
+  min-height: 32px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+  opacity: 0.5;
+}
+.spell-example-wrap:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { color: var(--gold); border-color: var(--border-glow); }
+@media (hover: none) { .copy-btn { opacity: 0.7; } }
 
 .specs-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
+  gap: 0;
   border: 1px solid var(--border);
 }
-
 .spec-item {
   display: flex;
   justify-content: space-between;
-  padding: 8px 14px;
-  font-size: 13px;
+  padding: 10px 16px;
+  font-size: 14px;
   border-bottom: 1px solid var(--border);
 }
 .spec-label { color: var(--text-dim); font-style: italic; }
-.spec-value { color: var(--text); font-family: var(--font-mono); font-size: 12px; }
+.spec-value { color: var(--text); font-family: var(--font-mono); font-size: 13px; }
 
 /* ─── FOOTER ─── */
 .footer {
@@ -553,32 +615,15 @@ body::before {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-dim);
 }
-
 .footer a { color: var(--text-dim); text-decoration: none; transition: color 0.3s; }
 .footer a:hover { color: var(--gold); }
 
-.sync-bar-inline {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-}
-
-.sync-bar-track {
-  width: 40px; height: 2px;
-  background: var(--border-glow);
-  overflow: hidden;
-}
-
-.sync-bar-fill {
-  height: 100%;
-  background: var(--emerald);
-  transition: width 0.5s;
-}
+.sync-bar-inline { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 13px; }
+.sync-bar-track { width: 40px; height: 3px; background: var(--border-glow); overflow: hidden; border-radius: 2px; }
+.sync-bar-fill { height: 100%; background: var(--emerald); transition: width 0.5s; border-radius: 2px; }
 
 /* ─── RESPONSIVE ─── */
 @media (max-width: 640px) {
@@ -586,7 +631,8 @@ body::before {
   .crystal-ball { width: 180px; height: 180px; }
   .hero-meta { flex-direction: column; gap: 6px; }
   .specs-grid { grid-template-columns: 1fr; }
-  .nav-links { gap: 12px; }
+  .nav-links { gap: 16px; }
+  .chart-section, .scrying { padding-left: 12px; }
 }
 </style>
 </head>
@@ -594,17 +640,15 @@ body::before {
 <div class="scroll">
 <div class="container">
 
-  <div class="ornament">&#10040; &#10038; &#10040;</div>
-
-  <!-- NAV -->
   <nav class="nav">
     <div class="nav-title">El Oráculo</div>
     <div class="nav-links">
-      <button class="nav-link active" data-view="dashboard">Visions</button>
-      <button class="nav-link" data-view="api">Grimoire</button>
+      <!-- FIX 6: Plain-language hints -->
+      <button class="nav-link active" data-view="dashboard">Visions<span class="nav-hint">Dashboard</span></button>
+      <button class="nav-link" data-view="api">Grimoire<span class="nav-hint">API Docs</span></button>
       <div class="nav-status">
         <div class="status-orb" id="syncDot"></div>
-        <span id="syncText">...</span>
+        <span id="syncText" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;</span>
       </div>
     </div>
   </nav>
@@ -612,31 +656,31 @@ body::before {
   <!-- DASHBOARD -->
   <div class="dash-view active" id="view-dashboard">
 
-    <!-- CRYSTAL BALL HERO -->
     <div class="hero">
       <div class="hero-subtitle">The Oracle reveals</div>
       <div class="crystal-ball">
         <div class="crystal-price">
-          <div class="crystal-price-value"><span class="dollar">$</span><span id="priceNum">...</span></div>
-          <div class="crystal-change" id="priceChange">...</div>
+          <!-- FIX 3: Skeleton loading -->
+          <div class="crystal-price-value"><span class="dollar">$</span><span id="priceNum" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+          <div class="crystal-change" id="priceChange"><span class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
         </div>
       </div>
       <div class="crystal-base"></div>
 
+      <div class="hero-tagline">On-chain price derived from your own node. No external APIs.</div>
       <div class="hero-inscription">per Bitcoin</div>
 
       <div class="hero-meta">
-        <span><span class="glyph">&#9830;</span> Block <span id="blockHeight">...</span></span>
-        <span><span class="glyph">&#9719;</span> <span id="blockTime">...</span></span>
+        <span><span class="glyph">&#9830;</span> Block <span id="blockHeight" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+        <span><span class="glyph">&#9719;</span> <span id="blockTime" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
       </div>
     </div>
 
     <div class="divider">&#10038;</div>
 
-    <!-- CHART -->
     <div class="chart-section">
       <div class="chart-header">
-        <div class="chart-title">&#9733; Price History</div>
+        <div class="chart-title">Price History</div>
         <div class="tf-group">
           <button class="tf-btn" data-range="1M">1M</button>
           <button class="tf-btn" data-range="6M">6M</button>
@@ -658,14 +702,17 @@ body::before {
 
     <div class="divider">&#10038;</div>
 
-    <!-- SCRYING (SEARCH) -->
     <div class="scrying">
-      <div class="scrying-title"><span>&#128302;</span> Scry the past</div>
+      <!-- FIX 6: Plain-language subtitle -->
+      <div class="scrying-title">Scry the past</div>
+      <div class="section-hint">Look up historical prices by block height or date</div>
       <div class="scrying-box">
         <div class="scrying-symbol">&#10022;</div>
-        <input class="scrying-input" id="searchInput" type="text" placeholder="Speak a block height or date...">
-        <button class="scrying-invoke" id="searchBtn">Divine</button>
+        <!-- FIX 7: Format hint in placeholder -->
+        <input class="scrying-input" id="searchInput" type="text" placeholder="Block height (e.g. 800000) or date (2024-01-15)">
+        <button class="scrying-invoke" id="searchBtn">Look Up</button>
       </div>
+      <div class="scrying-hint">Enter a numeric block height or a date in YYYY-MM-DD format</div>
       <div class="scrying-result" id="searchResult">
         <div class="sr-price" id="srPrice"></div>
         <div class="sr-meta" id="srMeta"></div>
@@ -678,62 +725,56 @@ body::before {
   <div class="api-view" id="view-api">
 
     <div class="grimoire-intro">
-      <b>The Grimoire</b> &mdash; these incantations summon BTC/USD prices divined entirely from the blockchain itself, through the <code>brk_oracle</code> algorithm. No exchange feeds. No external APIs. Pure on-chain revelation. The oracle listens on <b>port 3200</b>.
+      <b>The Grimoire</b> (API Documentation) &mdash; these endpoints serve BTC/USD prices divined entirely from the blockchain, via the <code>brk_oracle</code> algorithm. No exchange feeds. No external APIs. Pure on-chain revelation. Port <b>3200</b> by default.
     </div>
 
     <div class="spell-block">
-      <div class="spell-header">
-        <span class="spell-method">GET</span>
-        <span class="spell-path">/api/price/latest</span>
-      </div>
-      <div class="spell-desc">The latest price revealed by the oracle.</div>
-      <div class="spell-example">curl http://umbrel.local:3200/api/price/latest
+      <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/latest</span></div>
+      <div class="spell-desc">Returns the price at the most recently synced block.</div>
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)">Copy</button><div class="spell-example">curl http://umbrel.local:3200/api/price/latest
 
-{"height":942928,"price_usd":68260.19,"timestamp":1774874850}</div>
+{"height":942928,"price_usd":68260.19,"timestamp":1774874850}</div></div>
     </div>
 
     <div class="spell-block">
-      <div class="spell-header">
-        <span class="spell-method">GET</span>
-        <span class="spell-path">/api/price/{height}</span>
-      </div>
-      <div class="spell-desc">Divine the price at any block height.</div>
-      <div class="spell-example">curl http://umbrel.local:3200/api/price/800000
+      <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/{height}</span></div>
+      <div class="spell-desc">Returns the price at a specific block height.</div>
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)">Copy</button><div class="spell-example">curl http://umbrel.local:3200/api/price/800000
 
-{"height":800000,"price_usd":29806.73,"timestamp":1690168629}</div>
+{"height":800000,"price_usd":29806.73,"timestamp":1690168629}</div></div>
     </div>
 
     <div class="spell-block">
-      <div class="spell-header">
-        <span class="spell-method">GET</span>
-        <span class="spell-path">/api/price/date/{YYYY-MM-DD}</span>
-      </div>
-      <div class="spell-desc">Scry the price on a specific date.</div>
-      <div class="spell-example">curl http://umbrel.local:3200/api/price/date/2024-01-15
+      <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/date/{YYYY-MM-DD}</span></div>
+      <div class="spell-desc">Returns the price at the first block on or after the given UTC date.</div>
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)">Copy</button><div class="spell-example">curl http://umbrel.local:3200/api/price/date/2024-01-15
 
-{"date":"2024-01-15","height":825000,"price_usd":42853.0,"timestamp":1705276800}</div>
+{"date":"2024-01-15","height":825000,"price_usd":42853.0,"timestamp":1705276800}</div></div>
+    </div>
+
+    <!-- FIX 9: Document /api/price/chart -->
+    <div class="spell-block">
+      <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/chart?points={N}</span></div>
+      <div class="spell-desc">Sampled price history for charting. Returns N evenly-spaced data points across all synced blocks. Default: 600 points. Max: 2000.</div>
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)">Copy</button><div class="spell-example">curl "http://umbrel.local:3200/api/price/chart?points=100"
+
+[{"height":550000,"price_usd":8432.10,"timestamp":...}, ...]</div></div>
     </div>
 
     <div class="spell-block">
-      <div class="spell-header">
-        <span class="spell-method">GET</span>
-        <span class="spell-path">/api/price/range?from={}&amp;to={}</span>
-      </div>
-      <div class="spell-desc">Reveal a range of prices across time. Max 10,000 entries.</div>
-      <div class="spell-example">curl "http://umbrel.local:3200/api/price/range?from=800000&to=800010"
+      <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/range?from={}&amp;to={}</span></div>
+      <div class="spell-desc">Returns prices for a range of block heights or dates (YYYY-MM-DD). Max 10,000 entries per request.</div>
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)">Copy</button><div class="spell-example">curl "http://umbrel.local:3200/api/price/range?from=800000&to=800010"
 
-[{"height":800000,"price_usd":29806.73,"timestamp":1690168629},...]</div>
+[{"height":800000,"price_usd":29806.73,"timestamp":1690168629},...]</div></div>
     </div>
 
     <div class="spell-block">
-      <div class="spell-header">
-        <span class="spell-method">GET</span>
-        <span class="spell-path">/health</span>
-      </div>
-      <div class="spell-desc">The oracle's state of consciousness.</div>
-      <div class="spell-example">curl http://umbrel.local:3200/health
+      <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/health</span></div>
+      <div class="spell-desc">Returns sync status and progress information.</div>
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)">Copy</button><div class="spell-example">curl http://umbrel.local:3200/health
 
-{"synced_height":942928,"chain_tip":942930,"syncing":false,"progress_percent":99.99}</div>
+{"synced_height":942928,"chain_tip":942930,"syncing":false,"progress_percent":99.99}</div></div>
     </div>
 
     <div class="divider" style="margin:20px 0">&#10038;</div>
@@ -742,23 +783,20 @@ body::before {
       <div class="spec-item"><span class="spec-label">Algorithm</span><span class="spec-value">brk_oracle</span></div>
       <div class="spec-item"><span class="spec-label">Source</span><span class="spec-value">100% on-chain</span></div>
       <div class="spec-item"><span class="spec-label">Accuracy</span><span class="spec-value">0.11% median</span></div>
-      <div class="spec-item"><span class="spec-label">Resolution</span><span class="spec-value">per-block</span></div>
+      <div class="spec-item"><span class="spec-label">Resolution</span><span class="spec-value">per-block (~10 min)</span></div>
       <div class="spec-item"><span class="spec-label">Storage</span><span class="spec-value">~12 MB</span></div>
       <div class="spec-item"><span class="spec-label">RAM</span><span class="spec-value">&lt;100 MB</span></div>
     </div>
 
   </div>
 
-  <!-- FOOTER -->
   <footer class="footer">
-    <div><a href="https://github.com/lunaticoin/bitcoin-price-oracle" target="_blank">bitcoin-price-oracle</a> &middot; <a href="https://github.com/bitcoinresearchkit/brk" target="_blank">brk_oracle</a></div>
+    <div><a href="https://github.com/lunaticoin/bitcoin-price-oracle" target="_blank" rel="noopener noreferrer">bitcoin-price-oracle</a> &middot; <a href="https://github.com/bitcoinresearchkit/brk" target="_blank" rel="noopener noreferrer">brk_oracle</a></div>
     <div class="sync-bar-inline">
       <div class="sync-bar-track"><div class="sync-bar-fill" id="syncBarFill" style="width:0%"></div></div>
-      <span id="syncProgress">...</span>
+      <span id="syncProgress" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
     </div>
   </footer>
-
-  <div class="ornament">&#10040; &#10038; &#10040;</div>
 
 </div>
 </div>
@@ -784,6 +822,13 @@ async function fetchJSON(url) {
   return r.json();
 }
 
+// FIX 3: Remove skeleton class when data loads
+function reveal(id, text) {
+  const el = document.getElementById(id);
+  el.classList.remove('skeleton');
+  el.textContent = text;
+}
+
 // ─── NAV ───
 document.querySelectorAll('.nav-link').forEach(t => {
   t.addEventListener('click', () => {
@@ -800,25 +845,26 @@ document.querySelectorAll('.nav-link').forEach(t => {
 async function loadLatest() {
   try {
     latestPrice = await fetchJSON('/api/price/latest');
-    document.getElementById('priceNum').textContent = fmt(latestPrice.price_usd);
-    document.getElementById('blockHeight').textContent = '#' + fmtInt(latestPrice.height);
-    document.getElementById('blockTime').textContent = tsToTime(latestPrice.timestamp);
+    reveal('priceNum', fmt(latestPrice.price_usd));
+    reveal('blockHeight', '#' + fmtInt(latestPrice.height));
+    reveal('blockTime', tsToTime(latestPrice.timestamp));
   } catch(e) { console.error(e); }
 }
 
 async function loadHealth() {
   try {
     healthData = await fetchJSON('/health');
-    const d = document.getElementById('syncDot'), t = document.getElementById('syncText');
-    const bar = document.getElementById('syncBarFill'), prog = document.getElementById('syncProgress');
+    const d = document.getElementById('syncDot'), bar = document.getElementById('syncBarFill');
     if (healthData.syncing) {
-      d.classList.add('syncing'); t.textContent = `${healthData.progress_percent.toFixed(1)}%`;
+      d.classList.add('syncing');
+      reveal('syncText', `syncing ${healthData.progress_percent.toFixed(1)}%`);
       bar.style.width = healthData.progress_percent+'%'; bar.style.background='var(--gold)';
     } else {
-      d.classList.remove('syncing'); t.textContent = 'attuned';
+      d.classList.remove('syncing');
+      reveal('syncText', 'synced');
       bar.style.width='100%'; bar.style.background='var(--emerald)';
     }
-    prog.textContent = fmtInt(healthData.synced_height)+' / '+fmtInt(healthData.chain_tip);
+    reveal('syncProgress', fmtInt(healthData.synced_height)+' / '+fmtInt(healthData.chain_tip));
   } catch(e) { console.error(e); }
 }
 
@@ -829,40 +875,17 @@ async function load24hChange() {
     const prev = await fetchJSON(`/api/price/${h24}`);
     const ch = ((latestPrice.price_usd - prev.price_usd) / prev.price_usd) * 100;
     const el = document.getElementById('priceChange');
-    el.textContent = (ch>=0?'+':'')+ch.toFixed(2)+'%';
+    el.classList.remove('skeleton');
+    const elapsed = latestPrice.timestamp - prev.timestamp;
+    const hours = Math.round(elapsed / 3600);
+    el.textContent = (ch>=0?'+':'')+ch.toFixed(2)+'% (~'+hours+'h)';
     el.className = 'crystal-change ' + (ch>=0?'up':'down');
   } catch(e) {}
 }
 
 async function loadChart() {
-  if (!healthData) return;
   try {
-    const tip = healthData.synced_height;
-    const start = 550000;
-    const totalBlocks = tip - start;
-    const targetPoints = 600;
-    const step = Math.max(1, Math.floor(totalBlocks / targetPoints));
-
-    const sampledHeights = [];
-    for (let h = start; h <= tip; h += step) sampledHeights.push(h);
-    if (sampledHeights[sampledHeights.length-1] !== tip) sampledHeights.push(tip);
-
-    chartData = [];
-    const batchSize = 10000;
-    for (let i = 0; i < sampledHeights.length; ) {
-      const batchStart = sampledHeights[i];
-      let j = i;
-      while (j < sampledHeights.length && sampledHeights[j] - batchStart < batchSize) j++;
-      const batchEnd = sampledHeights[Math.min(j, sampledHeights.length) - 1];
-
-      const data = await fetchJSON(`/api/price/range?from=${batchStart}&to=${batchEnd}`);
-      const dataMap = new Map(data.map(d => [d.height, d]));
-      for (let k = i; k < j && k < sampledHeights.length; k++) {
-        const entry = dataMap.get(sampledHeights[k]);
-        if (entry) chartData.push(entry);
-      }
-      i = j;
-    }
+    chartData = await fetchJSON('/api/price/chart?points=600');
     drawChart();
   } catch(e) { console.error('Chart load failed:', e); }
 }
@@ -872,16 +895,14 @@ function getFilteredData() {
   if (activeRange==='ALL' || !chartData.length) return chartData;
   const now = chartData[chartData.length-1].timestamp;
   const r = {'1M':30*86400,'6M':182*86400,'1Y':365*86400};
-  const cut = now-(r[activeRange]||0);
-  return chartData.filter(d=>d.timestamp>=cut);
+  return chartData.filter(d=>d.timestamp>=(now-(r[activeRange]||0)));
 }
 
 function drawChart() {
   const canvas = document.getElementById('chart');
   const dpr = window.devicePixelRatio||1;
   const wrap = document.getElementById('chartWrap');
-  const w = wrap.clientWidth - 24;
-  const h = 280;
+  const w = wrap.clientWidth - 24, h = 280;
   canvas.width = w*dpr; canvas.height = h*dpr;
   canvas.style.width = w+'px'; canvas.style.height = h+'px';
   const ctx = canvas.getContext('2d');
@@ -891,49 +912,34 @@ function drawChart() {
   if (data.length<2) return;
 
   const prices = data.map(d=>d.price_usd);
-  const minP = Math.min(...prices)*0.93;
-  const maxP = Math.max(...prices)*1.05;
+  const minP = Math.min(...prices)*0.93, maxP = Math.max(...prices)*1.05;
   const pT=16, pB=24, pL=0, pR=56;
   const pH = h-pT-pB, pW = w-pL-pR;
-
   const toX = i => pL + (i/(data.length-1))*pW;
   const toY = p => pT + (1-(p-minP)/(maxP-minP))*pH;
 
   ctx.clearRect(0,0,w,h);
 
-  // Grid
   ctx.strokeStyle = 'rgba(201,168,76,0.06)';
   ctx.lineWidth = 1;
   ctx.setLineDash([2, 6]);
-  for (let i=0;i<=4;i++) {
-    const y = pT+(pH/4)*i;
-    ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(pL+pW,y); ctx.stroke();
-  }
+  for (let i=0;i<=4;i++) { const y=pT+(pH/4)*i; ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(pL+pW,y); ctx.stroke(); }
   ctx.setLineDash([]);
 
-  // Y labels
   ctx.fillStyle = '#6e6555';
-  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.font = "11px 'JetBrains Mono', monospace";
   ctx.textAlign = 'left';
-  for (let i=0;i<=4;i++) {
-    const price = maxP-((maxP-minP)/4)*i;
-    const y = pT+(pH/4)*i;
-    const label = price >= 1000 ? '$'+Math.round(price/1000)+'k' : '$'+Math.round(price);
-    ctx.fillText(label, pL+pW+6, y+3);
-  }
+  for (let i=0;i<=4;i++) { const price=maxP-((maxP-minP)/4)*i; ctx.fillText(price>=1000?'$'+Math.round(price/1000)+'k':'$'+Math.round(price), pL+pW+6, pT+(pH/4)*i+4); }
 
-  // X labels
   ctx.textAlign = 'center';
   const lc = Math.min(5, data.length);
   for (let i=0;i<lc;i++) {
-    const idx = Math.floor((data.length-1)*i/(lc-1));
-    const d = new Date(data[idx].timestamp*1000);
-    const ms = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const label = activeRange==='1M' ? `${d.getUTCDate()} ${ms[d.getUTCMonth()]}` : `${ms[d.getUTCMonth()]} '${String(d.getUTCFullYear()).slice(2)}`;
-    ctx.fillText(label, toX(idx), h-6);
+    const idx=Math.floor((data.length-1)*i/(lc-1));
+    const d=new Date(data[idx].timestamp*1000);
+    const ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    ctx.fillText(activeRange==='1M'?`${d.getUTCDate()} ${ms[d.getUTCMonth()]}`:`${ms[d.getUTCMonth()]} '${String(d.getUTCFullYear()).slice(2)}`, toX(idx), h-6);
   }
 
-  // Gradient fill (purple-gold mystical)
   const grad = ctx.createLinearGradient(0,pT,0,pT+pH);
   grad.addColorStop(0, 'rgba(201,168,76,0.12)');
   grad.addColorStop(0.5, 'rgba(123,94,167,0.06)');
@@ -941,21 +947,13 @@ function drawChart() {
   ctx.beginPath();
   ctx.moveTo(toX(0), toY(data[0].price_usd));
   for (let i=1;i<data.length;i++) ctx.lineTo(toX(i), toY(data[i].price_usd));
-  ctx.lineTo(toX(data.length-1), pT+pH);
-  ctx.lineTo(toX(0), pT+pH);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
+  ctx.lineTo(toX(data.length-1), pT+pH); ctx.lineTo(toX(0), pT+pH);
+  ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
 
-  // Line (gold)
   ctx.beginPath();
   ctx.moveTo(toX(0), toY(data[0].price_usd));
   for (let i=1;i<data.length;i++) ctx.lineTo(toX(i), toY(data[i].price_usd));
-  ctx.strokeStyle = '#c9a84c';
-  ctx.lineWidth = 1.5;
-  ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
-  ctx.stroke();
+  ctx.strokeStyle = '#c9a84c'; ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
 
   canvas._meta = { data, toX, toY, pL, pW, pT, pH };
 }
@@ -980,25 +978,17 @@ function handleChartHover(e) {
   tipEl.querySelector('.tt-date').textContent = tsToShort(d.timestamp);
   tipEl.querySelector('.tt-block').textContent = '#'+fmtInt(d.height);
 
-  const tx = m.toX(idx);
-  const ty = m.toY(d.price_usd);
+  const tx = m.toX(idx), ty = m.toY(d.price_usd);
   let left = tx+10;
   const wrap = document.getElementById('chartWrap');
   if (left+140 > wrap.clientWidth-10) left = tx-150;
-  tipEl.style.left = left+'px';
-  tipEl.style.top = (ty-8)+'px';
-  tipEl.classList.add('visible');
-  cross.style.left = (tx+12)+'px';
-  cross.classList.add('visible');
-  dot.style.left = (tx+12)+'px';
-  dot.style.top = (ty+12)+'px';
-  dot.classList.add('visible');
+  tipEl.style.left = left+'px'; tipEl.style.top = (ty-8)+'px'; tipEl.classList.add('visible');
+  cross.style.left = (tx+12)+'px'; cross.classList.add('visible');
+  dot.style.left = (tx+12)+'px'; dot.style.top = (ty+12)+'px'; dot.classList.add('visible');
 }
 
 function hideChartHover() {
-  tipEl.classList.remove('visible');
-  cross.classList.remove('visible');
-  dot.classList.remove('visible');
+  tipEl.classList.remove('visible'); cross.classList.remove('visible'); dot.classList.remove('visible');
 }
 
 chartCanvas.addEventListener('mousemove', handleChartHover);
@@ -1006,7 +996,6 @@ chartCanvas.addEventListener('mouseleave', hideChartHover);
 chartCanvas.addEventListener('touchmove', e => { e.preventDefault(); handleChartHover(e); }, {passive:false});
 chartCanvas.addEventListener('touchend', hideChartHover);
 
-// ─── TIMEFRAME ───
 document.querySelectorAll('.tf-btn').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelector('.tf-btn.active').classList.remove('active');
@@ -1022,37 +1011,48 @@ async function doSearch() {
   if (!q) return;
   const sr = document.getElementById('searchResult');
   sr.classList.remove('visible','error');
+  // Show loading state
+  document.getElementById('srPrice').textContent = '';
+  document.getElementById('srMeta').textContent = 'Consulting the oracle...';
+  sr.classList.add('visible');
   try {
     let data;
     if (/^\d{4}-\d{2}-\d{2}$/.test(q)) data = await fetchJSON(`/api/price/date/${q}`);
     else if (/^\d+$/.test(q)) data = await fetchJSON(`/api/price/${q}`);
-    else throw new Error('Speak a block height or date (YYYY-MM-DD)');
+    else throw new Error('Enter a numeric block height or a date as YYYY-MM-DD');
     document.getElementById('srPrice').textContent = '$'+fmt(data.price_usd);
     document.getElementById('srMeta').innerHTML = `<span>#${fmtInt(data.height)}</span><span>${tsToShort(data.timestamp)}</span><span>${tsToTime(data.timestamp)}</span>`;
     sr.classList.add('visible');
   } catch(e) {
     document.getElementById('srPrice').textContent='';
-    document.getElementById('srMeta').textContent=e.message||'The oracle sees nothing';
+    document.getElementById('srMeta').textContent=e.message||'No data found for this query';
     sr.classList.add('visible','error');
   }
 }
 document.getElementById('searchBtn').addEventListener('click', doSearch);
 document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 
+// ─── COPY TO CLIPBOARD ───
+function copyExample(btn) {
+  const code = btn.nextElementSibling.textContent.split('\n')[0].trim();
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+  });
+}
+
 // ─── RESIZE ───
 let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => { if(chartData.length) drawChart(); }, 100);
-});
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if(chartData.length) drawChart(); }, 100); });
 
-// ─── INIT ───
+// ─── FIX 2: Parallel init ───
 async function init() {
-  await loadHealth();
-  await loadLatest();
+  await Promise.all([loadHealth(), loadLatest(), loadChart()]);
   await load24hChange();
-  await loadChart();
-  setInterval(async()=>{ await loadLatest(); await loadHealth(); await load24hChange(); }, 30000);
+  setInterval(async () => {
+    await Promise.all([loadLatest(), loadHealth()]);
+    await load24hChange();
+  }, 30000);
   setInterval(loadChart, 300000);
 }
 init();
