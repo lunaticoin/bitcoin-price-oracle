@@ -1,475 +1,530 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bitcoin Price Oracle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap');
-
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #0a0e14;
-  --bg-surface: #0d1117;
-  --bg-elevated: #131920;
-  --bg-hover: #1a2230;
-  --orange: #f7931a;
-  --orange-dim: #f7931a66;
-  --orange-glow: #f7931a22;
+  --bg-primary: #F5F5F5;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #E8E8E8;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --border-color: #D1D5DB;
+  --accent: #f7931a;
+  --accent-hover: #e8850f;
+  --accent-bg: rgba(247,147,26,0.08);
+  --accent-border: rgba(247,147,26,0.2);
+  --green: #059669;
+  --red: #DC2626;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --chart-grid: rgba(0,0,0,0.06);
+  --chart-fill-top: rgba(247,147,26,0.12);
+  --chart-fill-bot: rgba(247,147,26,0.0);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #484f58;
+  --border-color: #30363d;
+  --accent: #f7931a;
+  --accent-hover: #ffab40;
+  --accent-bg: rgba(247,147,26,0.06);
+  --accent-border: rgba(247,147,26,0.15);
   --green: #3fb950;
   --red: #f85149;
-  --text: #c9d1d9;
-  --text-dim: #6e7681;
-  --text-muted: #484f58;
-  --border: #21262d;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --chart-grid: rgba(255,255,255,0.04);
+  --chart-fill-top: rgba(247,147,26,0.15);
+  --chart-fill-bot: rgba(247,147,26,0.0);
 }
-
-html { font-size: 16px; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
 }
 
-/* Scanline overlay */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.03) 2px,
-    rgba(0,0,0,0.03) 4px
-  );
-  pointer-events: none;
-  z-index: 999;
+/* ─── NAV ─── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  height: 56px;
 }
 
-.container {
-  max-width: 900px;
+.nav-inner {
+  max-width: 960px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
-}
-
-/* ─── HEADER ─── */
-header {
+  padding: 0 1.5rem;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 2.5rem;
 }
 
-.logo {
+.nav-left { display: flex; align-items: center; gap: 0.75rem; }
+
+.nav-logo { width: 28px; height: 28px; flex-shrink: 0; }
+.nav-logo svg { width: 100%; height: 100%; }
+
+.nav-brand {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+.nav-brand span { color: var(--accent); }
+
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  height: 100%;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0 1rem;
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
 }
 
-.logo-icon {
-  width: 28px;
-  height: 28px;
-  border: 2px solid var(--orange);
+.nav-tab:hover { color: var(--text-primary); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.nav-right { display: flex; align-items: center; gap: 0.5rem; }
+
+.nav-sync {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.75rem;
-  color: var(--orange);
-  flex-shrink: 0;
-}
-
-.logo-text {
-  font-family: 'Space Mono', monospace;
+  gap: 0.4rem;
   font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-
-.logo-text span { color: var(--orange); }
-
-.sync-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.65rem;
-  color: var(--text-dim);
-  letter-spacing: 0.05em;
+  color: var(--text-muted);
 }
 
 .sync-dot {
-  width: 6px;
-  height: 6px;
+  width: 6px; height: 6px;
   background: var(--green);
   border-radius: 50%;
-  flex-shrink: 0;
+}
+.sync-dot.syncing { background: var(--accent); animation: pulse 1.5s infinite; }
+@keyframes pulse { 50% { opacity: 0.3; } }
+
+.theme-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 32px; height: 32px;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.theme-btn:hover { color: var(--accent); border-color: var(--accent-border); }
+
+/* ─── MAIN ─── */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
 }
 
-.sync-dot.syncing {
-  animation: pulse-dot 1.5s ease-in-out infinite;
-  background: var(--orange);
+.view { display: none; }
+.view.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-/* ─── HERO PRICE ─── */
-.hero {
-  margin-bottom: 3rem;
-  position: relative;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -40px;
-  left: -60px;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, var(--orange-glow) 0%, transparent 70%);
-  pointer-events: none;
+/* ─── HERO ─── */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  align-items: start;
 }
 
 .price-label {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 500;
   color: var(--text-muted);
-  letter-spacing: 0.15em;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
   margin-bottom: 0.5rem;
 }
 
-.price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
 .price-value {
-  font-family: 'Space Mono', monospace;
-  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(2rem, 7vw, 3.25rem);
   font-weight: 700;
-  color: #ffffff;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-primary);
 }
-
-.price-value .dollar {
-  color: var(--orange);
-  font-weight: 400;
-}
+.price-value .dollar { color: var(--accent); font-weight: 400; }
 
 .price-change {
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 0.2em 0.5em;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  margin-top: 0.5rem;
 }
-
-.price-change.up { color: var(--green); border-color: #3fb95033; }
-.price-change.down { color: var(--red); border-color: #f8514933; }
+.price-change.up { background: rgba(5,150,105,0.12); color: var(--green); }
+.price-change.down { background: rgba(220,38,38,0.12); color: var(--red); }
 
 .price-meta {
   display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
-  font-size: 0.7rem;
-  color: var(--text-dim);
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
   flex-wrap: wrap;
 }
+.price-meta .label { color: var(--text-muted); margin-right: 0.25rem; }
+.price-meta .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; }
 
-.price-meta span { display: flex; align-items: center; gap: 0.35rem; }
-.price-meta .label { color: var(--text-muted); }
+.hero-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.source-badge {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
 
 /* ─── CHART ─── */
-.chart-section {
-  margin-bottom: 3rem;
-}
+.chart-card { padding: 1rem 1rem 0.75rem; margin-bottom: 1.5rem; }
 
 .chart-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0 0.5rem;
 }
 
-.chart-title {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
+.chart-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
 
-.timeframe-buttons {
+.tf-group {
   display: flex;
-  gap: 2px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  padding: 2px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
 .tf-btn {
   background: none;
   border: none;
-  color: var(--text-dim);
-  font-family: inherit;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.65rem;
-  padding: 0.35em 0.75em;
+  font-weight: 500;
+  padding: 0.4rem 0.7rem;
   cursor: pointer;
-  letter-spacing: 0.05em;
   transition: all 0.15s;
+  border-right: 1px solid var(--border-color);
 }
+.tf-btn:last-child { border-right: none; }
+.tf-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+.tf-btn.active { color: var(--accent); background: var(--accent-bg); }
 
-.tf-btn:hover { color: var(--text); background: var(--bg-hover); }
-.tf-btn.active { color: var(--orange); background: var(--bg-elevated); }
-
-.chart-container {
+.chart-wrap {
   position: relative;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  padding: 1.25rem 1rem 0.75rem;
-}
-
-.chart-container canvas {
-  display: block;
-  width: 100%;
   cursor: crosshair;
 }
+.chart-wrap canvas { display: block; width: 100%; }
 
 .chart-tooltip {
   position: absolute;
   pointer-events: none;
-  background: var(--bg);
-  border: 1px solid var(--orange-dim);
+  background: var(--bg-secondary);
+  border: 1px solid var(--accent-border);
+  border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   opacity: 0;
   transition: opacity 0.1s;
   z-index: 10;
-  white-space: nowrap;
+  box-shadow: var(--shadow-md);
 }
-
 .chart-tooltip.visible { opacity: 1; }
-.chart-tooltip .tt-price { color: #fff; font-weight: 700; font-size: 0.8rem; }
-.chart-tooltip .tt-date { color: var(--text-dim); margin-top: 0.15rem; }
-.chart-tooltip .tt-block { color: var(--text-muted); font-size: 0.6rem; margin-top: 0.15rem; }
+.tt-price { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.85rem; }
+.tt-date { color: var(--text-secondary); margin-top: 0.1rem; }
+.tt-block { color: var(--text-muted); font-size: 0.65rem; }
 
 .chart-crosshair {
   position: absolute;
   top: 0;
   width: 1px;
   height: 100%;
-  background: var(--orange-dim);
-  pointer-events: none;
+  background: var(--accent);
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.1s;
 }
-
-.chart-crosshair.visible { opacity: 1; }
+.chart-crosshair.visible { opacity: 0.3; }
 
 /* ─── SEARCH ─── */
-.search-section {
-  margin-bottom: 3rem;
-}
-
-.search-title {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-bottom: 0.75rem;
-}
+.search-card { margin-bottom: 1.5rem; }
 
 .search-box {
   display: flex;
-  border: 1px solid var(--border);
-  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
   transition: border-color 0.2s;
 }
-
-.search-box:focus-within { border-color: var(--orange-dim); }
+.search-box:focus-within { border-color: var(--accent); }
 
 .search-prefix {
-  padding: 0.75rem 1rem;
-  color: var(--orange);
-  font-size: 0.8rem;
-  border-right: 1px solid var(--border);
+  padding: 0.7rem 0.85rem;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
   display: flex;
   align-items: center;
-  background: var(--bg-elevated);
-  user-select: none;
 }
 
 .search-input {
   flex: 1;
-  background: none;
+  background: var(--bg-secondary);
   border: none;
-  color: var(--text);
-  font-family: inherit;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 0.85rem;
   outline: none;
 }
-
 .search-input::placeholder { color: var(--text-muted); }
 
 .search-btn {
-  background: var(--bg-elevated);
+  background: var(--accent);
   border: none;
-  border-left: 1px solid var(--border);
-  color: var(--text-dim);
-  font-family: inherit;
-  font-size: 0.7rem;
-  padding: 0.75rem 1.25rem;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.7rem 1.25rem;
   cursor: pointer;
-  letter-spacing: 0.05em;
-  transition: all 0.15s;
+  transition: background 0.15s;
 }
-
-.search-btn:hover { color: var(--orange); background: var(--bg-hover); }
+.search-btn:hover { background: var(--accent-hover); }
 
 .search-result {
-  margin-top: 0.5rem;
-  padding: 1rem 1.25rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  font-size: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
   display: none;
 }
+.search-result.visible { display: block; animation: fadeIn 0.15s ease; }
+.search-result.error { border-color: var(--red); }
+.search-result.error .sr-meta { color: var(--red); }
+.sr-price { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.25rem; }
+.sr-meta { font-size: 0.75rem; color: var(--text-secondary); display: flex; gap: 1.5rem; flex-wrap: wrap; }
 
-.search-result.visible { display: block; }
-.search-result.error { border-color: #f8514933; color: var(--red); }
+/* ─── API DOCS ─── */
+.api-section { margin-bottom: 1.5rem; }
+.api-section h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
 
-.sr-price {
-  font-size: 1.25rem;
-  color: #fff;
+.endpoint {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.endpoint-method {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
   font-weight: 700;
-  margin-bottom: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--accent-bg);
+  color: var(--accent);
+  margin-right: 0.5rem;
 }
 
-.sr-meta {
-  color: var(--text-dim);
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+.endpoint-path {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-primary);
 }
+
+.endpoint-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+.endpoint-example {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.api-note {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding: 1rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: 0.5rem;
+}
+.api-note strong { color: var(--accent); }
 
 /* ─── FOOTER ─── */
 footer {
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border-color);
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-footer a {
-  color: var(--text-dim);
-  text-decoration: none;
-  transition: color 0.15s;
-}
+footer a { color: var(--text-secondary); text-decoration: none; }
+footer a:hover { color: var(--accent); }
 
-footer a:hover { color: var(--orange); }
-
-.sync-detail {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.sync-bar {
-  width: 60px;
-  height: 3px;
-  background: var(--bg-elevated);
-  overflow: hidden;
-}
-
-.sync-bar-fill {
-  height: 100%;
-  background: var(--green);
-  transition: width 0.5s;
-}
-
-/* ─── LOADING SKELETON ─── */
-.skeleton {
-  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-hover) 50%, var(--bg-elevated) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  color: transparent !important;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+.sync-detail { display: flex; align-items: center; gap: 0.5rem; }
+.sync-bar { width: 50px; height: 3px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; }
+.sync-bar-fill { height: 100%; background: var(--green); transition: width 0.5s; border-radius: 2px; }
 
 /* ─── RESPONSIVE ─── */
-@media (max-width: 600px) {
-  .container { padding: 1.25rem 1rem; }
-  .price-meta { gap: 1rem; }
-  header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+@media (max-width: 640px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-badge { align-items: flex-start; flex-direction: row; }
+  .nav-tabs { display: none; }
+  .container { padding: 1rem; }
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div class="logo">
-      <div class="logo-icon">&#x20BF;</div>
-      <div class="logo-text"><span>Bitcoin</span> Price Oracle</div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-left">
+      <div class="nav-logo"><svg viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(512 420) rotate(90) scale(540)"><stop offset="0%" stop-color="#18222B"/><stop offset="58%" stop-color="#10161C"/><stop offset="100%" stop-color="#090C10"/></radialGradient><radialGradient id="orbFill" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(438 340) rotate(50) scale(390)"><stop offset="0%" stop-color="#F4FAFF" stop-opacity="0.26"/><stop offset="22%" stop-color="#B9DDF4" stop-opacity="0.16"/><stop offset="55%" stop-color="#63859A" stop-opacity="0.10"/><stop offset="100%" stop-color="#0C1217" stop-opacity="0.04"/></radialGradient><linearGradient id="orbStroke" x1="292" y1="252" x2="734" y2="760" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F4FAFF" stop-opacity="0.72"/><stop offset="38%" stop-color="#A5D2EB" stop-opacity="0.34"/><stop offset="100%" stop-color="#627989" stop-opacity="0.22"/></linearGradient><linearGradient id="eclipse" x1="606" y1="318" x2="450" y2="680" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.82"/><stop offset="48%" stop-color="#CBEAFF" stop-opacity="0.34"/><stop offset="100%" stop-color="#8CCFFF" stop-opacity="0.06"/></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="26" stdDeviation="30" flood-color="#000000" flood-opacity="0.36"/></filter><filter id="blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="18"/></filter><clipPath id="orbClip"><circle cx="512" cy="512" r="228"/></clipPath></defs><rect x="64" y="64" width="896" height="896" rx="220" fill="url(#bg)"/><circle cx="512" cy="512" r="246" fill="#90D8FF" fill-opacity="0.045" filter="url(#blur)"/><g filter="url(#shadow)"><circle cx="512" cy="512" r="228" fill="url(#orbFill)"/><circle cx="512" cy="512" r="220" stroke="url(#orbStroke)" stroke-width="12"/></g><g clip-path="url(#orbClip)"><path d="M620 344C668 392 698 458 698 530C698 640 634 734 541 776C605 730 646 641 646 535C646 453 618 385 570 340C587 338 605 340 620 344Z" fill="url(#eclipse)"/><path d="M590 338C632 382 658 444 658 516C658 634 596 731 506 776C554 730 586 640 586 534C586 451 566 386 530 342C550 338 572 336 590 338Z" fill="#081016" fill-opacity="0.34"/><path d="M382 366C416 334 460 314 510 314" stroke="#F8FCFF" stroke-opacity="0.54" stroke-width="16" stroke-linecap="round"/><ellipse cx="410" cy="402" rx="48" ry="22" transform="rotate(-28 410 402)" fill="#F6FBFF" fill-opacity="0.10"/><path d="M392 646C430 682 482 704 538 704C570 704 602 697 629 683" stroke="#D6EEFF" stroke-opacity="0.14" stroke-width="10" stroke-linecap="round"/></g></svg></div>
+      <div class="nav-brand"><span>Bitcoin</span> Price Oracle</div>
     </div>
-    <div class="sync-badge" id="syncBadge">
-      <div class="sync-dot" id="syncDot"></div>
-      <span id="syncText">connecting...</span>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-view="dashboard">Dashboard</button>
+      <button class="nav-tab" data-view="api">API Docs</button>
     </div>
-  </header>
+    <div class="nav-right">
+      <div class="nav-sync" id="syncBadge"><div class="sync-dot" id="syncDot"></div><span id="syncText">...</span></div>
+      <button class="theme-btn" id="themeBtn" title="Toggle theme">&#9788;</button>
+    </div>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="price-label">on-chain consensus price</div>
-    <div class="price-row">
-      <div class="price-value" id="priceValue"><span class="dollar">$</span><span id="priceNum" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+<div class="container">
+
+<!-- ═══ DASHBOARD VIEW ═══ -->
+<div class="view active" id="view-dashboard">
+
+  <section class="hero-grid">
+    <div>
+      <div class="price-label">On-chain consensus price</div>
+      <div class="price-value"><span class="dollar">$</span><span id="priceNum">--</span></div>
       <div class="price-change" id="priceChange">&mdash;</div>
+      <div class="price-meta">
+        <span><span class="label">Block</span><span class="mono" id="blockHeight">&mdash;</span></span>
+        <span><span class="label">Time</span><span class="mono" id="blockTime">&mdash;</span></span>
+      </div>
     </div>
-    <div class="price-meta">
-      <span><span class="label">block</span> <span id="blockHeight">&mdash;</span></span>
-      <span><span class="label">time</span> <span id="blockTime">&mdash;</span></span>
-      <span><span class="label">source</span> on-chain oracle</span>
+    <div class="hero-badge">
+      <div class="source-badge">100% on-chain</div>
     </div>
   </section>
 
-  <!-- CHART -->
-  <section class="chart-section">
+  <section class="card chart-card">
     <div class="chart-header">
-      <div class="chart-title">price history</div>
-      <div class="timeframe-buttons">
+      <div class="chart-title">Price History</div>
+      <div class="tf-group">
         <button class="tf-btn" data-range="1M">1M</button>
         <button class="tf-btn" data-range="6M">6M</button>
         <button class="tf-btn" data-range="1Y">1Y</button>
         <button class="tf-btn active" data-range="ALL">ALL</button>
       </div>
     </div>
-    <div class="chart-container">
-      <canvas id="chart" height="280"></canvas>
+    <div class="chart-wrap" id="chartWrap">
+      <canvas id="chart" height="300"></canvas>
       <div class="chart-crosshair" id="crosshair"></div>
       <div class="chart-tooltip" id="tooltip">
         <div class="tt-price"></div>
@@ -479,12 +534,11 @@ footer a:hover { color: var(--orange); }
     </div>
   </section>
 
-  <!-- SEARCH -->
-  <section class="search-section">
-    <div class="search-title">lookup price</div>
+  <section class="card search-card">
+    <div class="price-label" style="margin-bottom:0.75rem">Price Lookup</div>
     <div class="search-box">
       <div class="search-prefix">&gt;</div>
-      <input class="search-input" id="searchInput" type="text" placeholder="block height or date (YYYY-MM-DD)" spellcheck="false" autocomplete="off">
+      <input class="search-input" id="searchInput" type="text" placeholder="block height or date (YYYY-MM-DD)">
       <button class="search-btn" id="searchBtn">QUERY</button>
     </div>
     <div class="search-result" id="searchResult">
@@ -492,17 +546,136 @@ footer a:hover { color: var(--orange); }
       <div class="sr-meta" id="srMeta"></div>
     </div>
   </section>
+</div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div>
-      powered by <a href="https://github.com/bitcoinresearchkit/brk" target="_blank">brk_oracle</a> &middot; 100% on-chain data
+<!-- ═══ API DOCS VIEW ═══ -->
+<div class="view" id="view-api">
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="api-note">
+      <strong>Bitcoin Price Oracle API</strong> serves BTC/USD prices computed 100% on-chain from your own Bitcoin node. Data is provided by the <code>brk_oracle</code> algorithm, which detects round-dollar transaction patterns in block outputs. No external APIs or exchange data are used. The API runs on <strong>port 3200</strong> by default.
     </div>
-    <div class="sync-detail" id="syncDetail">
-      <div class="sync-bar"><div class="sync-bar-fill" id="syncBarFill" style="width:0%"></div></div>
-      <span id="syncProgress"></span>
+  </div>
+
+  <div class="card api-section">
+    <h3>Endpoints</h3>
+
+    <div class="endpoint">
+      <span class="endpoint-method">GET</span>
+      <span class="endpoint-path">/api/price/latest</span>
+      <div class="endpoint-desc">Returns the price at the most recently synced block.</div>
+      <div class="endpoint-example">curl http://umbrel.local:3200/api/price/latest
+
+{
+  "height": 942928,
+  "price_usd": 68260.19,
+  "timestamp": 1774874850
+}</div>
     </div>
-  </footer>
+
+    <div class="endpoint">
+      <span class="endpoint-method">GET</span>
+      <span class="endpoint-path">/api/price/{height}</span>
+      <div class="endpoint-desc">Returns the price at a specific block height.</div>
+      <div class="endpoint-example">curl http://umbrel.local:3200/api/price/800000
+
+{
+  "height": 800000,
+  "price_usd": 29806.73,
+  "timestamp": 1690168629
+}</div>
+    </div>
+
+    <div class="endpoint">
+      <span class="endpoint-method">GET</span>
+      <span class="endpoint-path">/api/price/date/{YYYY-MM-DD}</span>
+      <div class="endpoint-desc">Returns the price at the first block on or after the given UTC date.</div>
+      <div class="endpoint-example">curl http://umbrel.local:3200/api/price/date/2024-01-15
+
+{
+  "date": "2024-01-15",
+  "height": 825000,
+  "price_usd": 42853.0,
+  "timestamp": 1705276800
+}</div>
+    </div>
+
+    <div class="endpoint">
+      <span class="endpoint-method">GET</span>
+      <span class="endpoint-path">/api/price/range?from={}&to={}</span>
+      <div class="endpoint-desc">Returns prices for a range of block heights or dates. Max 10,000 entries per request. The <code>from</code> and <code>to</code> parameters accept either block heights (numeric) or dates (YYYY-MM-DD format).</div>
+      <div class="endpoint-example">curl "http://umbrel.local:3200/api/price/range?from=800000&to=800010"
+
+[
+  {"height":800000,"price_usd":29806.73,"timestamp":1690168629},
+  {"height":800001,"price_usd":29810.45,"timestamp":1690169234},
+  ...
+]</div>
+    </div>
+
+    <div class="endpoint">
+      <span class="endpoint-method">GET</span>
+      <span class="endpoint-path">/health</span>
+      <div class="endpoint-desc">Returns sync status and progress information.</div>
+      <div class="endpoint-example">curl http://umbrel.local:3200/health
+
+{
+  "synced_height": 942928,
+  "chain_tip": 942930,
+  "syncing": false,
+  "progress_percent": 99.99
+}</div>
+    </div>
+  </div>
+
+  <div class="card api-section">
+    <h3>Configuration</h3>
+    <div class="endpoint">
+      <div class="endpoint-desc" style="margin-top:0">
+        <strong>Port:</strong> 3200 (default)<br>
+        <strong>Data source:</strong> brk_oracle on-chain algorithm<br>
+        <strong>Accuracy:</strong> 0.11% median error (from block 550,000 / Nov 2018)<br>
+        <strong>Resolution:</strong> Per-block (~10 min)<br>
+        <strong>Coverage:</strong> Block 0 to chain tip (embedded prices for blocks 0-549,999, oracle-computed from 550,000+)<br>
+        <strong>Storage:</strong> ~12 MB (prices.bin + timestamps.bin)<br>
+        <strong>RAM usage:</strong> &lt;100 MB
+      </div>
+    </div>
+  </div>
+
+  <div class="card api-section">
+    <h3>Integration Examples</h3>
+    <div class="endpoint">
+      <span class="endpoint-path">JavaScript</span>
+      <div class="endpoint-example">const res = await fetch('/api/price/latest');
+const { price_usd, height } = await res.json();
+console.log(`BTC: $${price_usd} at block ${height}`);</div>
+    </div>
+    <div class="endpoint">
+      <span class="endpoint-path">Python</span>
+      <div class="endpoint-example">import requests
+r = requests.get('http://umbrel.local:3200/api/price/latest')
+print(f"BTC: ${r.json()['price_usd']}")</div>
+    </div>
+    <div class="endpoint">
+      <span class="endpoint-path">cURL</span>
+      <div class="endpoint-example"># Latest price
+curl -s http://umbrel.local:3200/api/price/latest | jq .price_usd
+
+# Price on a specific date
+curl -s http://umbrel.local:3200/api/price/date/2024-06-15 | jq .</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div>Powered by <a href="https://github.com/lunaticoin/bitcoin-price-oracle" target="_blank">bitcoin-price-oracle</a> &middot; Algorithm by <a href="https://github.com/bitcoinresearchkit/brk" target="_blank">brk_oracle</a></div>
+  <div class="sync-detail">
+    <div class="sync-bar"><div class="sync-bar-fill" id="syncBarFill" style="width:0%"></div></div>
+    <span id="syncProgress" class="mono" style="font-family:'JetBrains Mono',monospace;font-size:0.6rem"></span>
+  </div>
+</footer>
+
 </div>
 
 <script>
@@ -512,217 +685,194 @@ let latestPrice = null;
 let healthData = null;
 let activeRange = 'ALL';
 
-// ─── Helpers ───
 function fmt(n) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function fmtInt(n) { return n.toLocaleString('en-US'); }
-function tsToDate(ts) {
-  const d = new Date(ts * 1000);
-  return d.toISOString().slice(0, 10);
-}
-function tsToTime(ts) {
-  const d = new Date(ts * 1000);
-  return d.toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
-}
+function tsToTime(ts) { return new Date(ts*1000).toISOString().slice(0,16).replace('T',' ')+' UTC'; }
 function tsToShort(ts) {
-  const d = new Date(ts * 1000);
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+  const d=new Date(ts*1000), m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${m[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
 }
 
-// ─── API ───
 async function fetchJSON(url) {
-  const res = await fetch(API + url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+  const r = await fetch(API + url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
 }
 
+// ─── NAV ───
+document.querySelectorAll('.nav-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelector('.nav-tab.active').classList.remove('active');
+    t.classList.add('active');
+    document.querySelector('.view.active').classList.remove('active');
+    document.getElementById('view-' + t.dataset.view).classList.add('active');
+  });
+});
+
+// ─── THEME ───
+const themeBtn = document.getElementById('themeBtn');
+function setTheme(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  themeBtn.textContent = dark ? '\u2606' : '\u263E';
+  localStorage.setItem('oracle_theme', dark ? 'dark' : 'light');
+  if (chartData.length) drawChart();
+}
+themeBtn.addEventListener('click', () => {
+  setTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
+});
+const saved = localStorage.getItem('oracle_theme');
+if (saved) setTheme(saved === 'dark');
+
+// ─── DATA LOADING ───
 async function loadLatest() {
   try {
     latestPrice = await fetchJSON('/api/price/latest');
-    updateHero();
-  } catch (e) { console.error('Failed to load latest price', e); }
+    document.getElementById('priceNum').textContent = fmt(latestPrice.price_usd);
+    document.getElementById('blockHeight').textContent = '#' + fmtInt(latestPrice.height);
+    document.getElementById('blockTime').textContent = tsToTime(latestPrice.timestamp);
+  } catch(e) { console.error(e); }
 }
 
 async function loadHealth() {
   try {
     healthData = await fetchJSON('/health');
-    updateSync();
-  } catch (e) { console.error('Failed to load health', e); }
-}
-
-async function loadChart() {
-  try {
-    if (!healthData) return;
-    const tip = healthData.synced_height;
-    const start = 550000; // oracle starts here
-    const step = Math.max(1, Math.floor((tip - start) / 500));
-    const heights = [];
-    for (let h = start; h <= tip; h += step) heights.push(h);
-    if (heights[heights.length - 1] !== tip) heights.push(tip);
-
-    // Fetch in chunks of 10000
-    chartData = [];
-    for (let i = 0; i < heights.length; i += 10000) {
-      const from = heights[i];
-      const to = heights[Math.min(i + 9999, heights.length - 1)];
-      const data = await fetchJSON(`/api/price/range?from=${from}&to=${to}`);
-      // Sample from the chunk
-      const chunkStep = Math.max(1, Math.floor(data.length / (10000 / step)));
-      for (let j = 0; j < data.length; j += chunkStep) {
-        chartData.push(data[j]);
-      }
+    const d = document.getElementById('syncDot'), t = document.getElementById('syncText');
+    const bar = document.getElementById('syncBarFill'), prog = document.getElementById('syncProgress');
+    if (healthData.syncing) {
+      d.classList.add('syncing'); t.textContent = `syncing ${healthData.progress_percent.toFixed(1)}%`;
+      bar.style.width = healthData.progress_percent+'%'; bar.style.background='var(--accent)';
+    } else {
+      d.classList.remove('syncing'); t.textContent = `synced`;
+      bar.style.width='100%'; bar.style.background='var(--green)';
     }
-
-    // Deduplicate and sort
-    const seen = new Set();
-    chartData = chartData.filter(d => {
-      if (seen.has(d.height)) return false;
-      seen.add(d.height);
-      return true;
-    }).sort((a, b) => a.height - b.height);
-
-    drawChart();
-  } catch (e) { console.error('Failed to load chart data', e); }
+    prog.textContent = fmtInt(healthData.synced_height)+' / '+fmtInt(healthData.chain_tip);
+  } catch(e) { console.error(e); }
 }
 
 async function load24hChange() {
   if (!latestPrice) return;
   try {
-    const oneDayAgo = latestPrice.timestamp - 86400;
-    // Estimate block ~144 blocks ago
     const h24 = Math.max(550000, latestPrice.height - 144);
     const prev = await fetchJSON(`/api/price/${h24}`);
-    const change = ((latestPrice.price_usd - prev.price_usd) / prev.price_usd) * 100;
+    const ch = ((latestPrice.price_usd - prev.price_usd) / prev.price_usd) * 100;
     const el = document.getElementById('priceChange');
-    el.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
-    el.className = 'price-change ' + (change >= 0 ? 'up' : 'down');
-  } catch (e) {}
+    el.textContent = (ch>=0?'+':'')+ch.toFixed(2)+'%';
+    el.className = 'price-change ' + (ch>=0?'up':'down');
+  } catch(e) {}
 }
 
-// ─── Update DOM ───
-function updateHero() {
-  if (!latestPrice) return;
-  const numEl = document.getElementById('priceNum');
-  numEl.classList.remove('skeleton');
-  numEl.textContent = fmt(latestPrice.price_usd);
-  document.getElementById('blockHeight').textContent = '#' + fmtInt(latestPrice.height);
-  document.getElementById('blockTime').textContent = tsToTime(latestPrice.timestamp);
-}
-
-function updateSync() {
+async function loadChart() {
   if (!healthData) return;
-  const dot = document.getElementById('syncDot');
-  const text = document.getElementById('syncText');
-  const bar = document.getElementById('syncBarFill');
-  const progress = document.getElementById('syncProgress');
+  try {
+    const tip = healthData.synced_height;
+    const start = 550000;
+    const totalBlocks = tip - start;
+    const targetPoints = 600;
+    const step = Math.max(1, Math.floor(totalBlocks / targetPoints));
 
-  if (healthData.syncing) {
-    dot.classList.add('syncing');
-    text.textContent = `syncing ${healthData.progress_percent.toFixed(1)}%`;
-    bar.style.width = healthData.progress_percent + '%';
-    bar.style.background = 'var(--orange)';
-    progress.textContent = `${fmtInt(healthData.synced_height)} / ${fmtInt(healthData.chain_tip)}`;
-  } else {
-    dot.classList.remove('syncing');
-    text.textContent = `synced #${fmtInt(healthData.synced_height)}`;
-    bar.style.width = '100%';
-    bar.style.background = 'var(--green)';
-    progress.textContent = `${fmtInt(healthData.synced_height)} / ${fmtInt(healthData.chain_tip)}`;
-  }
+    // Build list of heights to sample
+    const sampledHeights = [];
+    for (let h = start; h <= tip; h += step) sampledHeights.push(h);
+    if (sampledHeights[sampledHeights.length-1] !== tip) sampledHeights.push(tip);
+
+    // Fetch in batches using range endpoint
+    chartData = [];
+    const batchSize = 10000;
+    for (let i = 0; i < sampledHeights.length; ) {
+      const batchStart = sampledHeights[i];
+      // Find last height in this batch within batchSize range
+      let j = i;
+      while (j < sampledHeights.length && sampledHeights[j] - batchStart < batchSize) j++;
+      const batchEnd = sampledHeights[Math.min(j, sampledHeights.length) - 1];
+
+      const data = await fetchJSON(`/api/price/range?from=${batchStart}&to=${batchEnd}`);
+
+      // Sample from the batch at our desired step
+      const dataMap = new Map(data.map(d => [d.height, d]));
+      for (let k = i; k < j && k < sampledHeights.length; k++) {
+        const entry = dataMap.get(sampledHeights[k]);
+        if (entry) chartData.push(entry);
+      }
+      i = j;
+    }
+
+    drawChart();
+  } catch(e) { console.error('Chart load failed:', e); }
 }
 
-// ─── Chart Drawing ───
+// ─── CHART ───
 function getFilteredData() {
-  if (activeRange === 'ALL' || chartData.length === 0) return chartData;
-  const now = chartData[chartData.length - 1].timestamp;
-  const ranges = { '1M': 30*86400, '6M': 182*86400, '1Y': 365*86400 };
-  const cutoff = now - (ranges[activeRange] || 0);
-  return chartData.filter(d => d.timestamp >= cutoff);
+  if (activeRange==='ALL' || !chartData.length) return chartData;
+  const now = chartData[chartData.length-1].timestamp;
+  const r = {'1M':30*86400,'6M':182*86400,'1Y':365*86400};
+  const cut = now-(r[activeRange]||0);
+  return chartData.filter(d=>d.timestamp>=cut);
 }
 
 function drawChart() {
   const canvas = document.getElementById('chart');
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.parentElement.getBoundingClientRect();
-  const w = rect.width - 32; // padding
-  const h = 280;
-
-  canvas.width = w * dpr;
-  canvas.height = h * dpr;
-  canvas.style.width = w + 'px';
-  canvas.style.height = h + 'px';
-
+  const dpr = window.devicePixelRatio||1;
+  const wrap = document.getElementById('chartWrap');
+  const w = wrap.clientWidth;
+  const h = 300;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  canvas.style.width = w+'px'; canvas.style.height = h+'px';
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
   const data = getFilteredData();
-  if (data.length < 2) return;
+  if (data.length<2) return;
 
-  const prices = data.map(d => d.price_usd);
-  const minP = Math.min(...prices) * 0.95;
-  const maxP = Math.max(...prices) * 1.05;
+  const prices = data.map(d=>d.price_usd);
+  const minP = Math.min(...prices)*0.93;
+  const maxP = Math.max(...prices)*1.05;
+  const pT=24, pB=30, pL=0, pR=65;
+  const pH = h-pT-pB, pW = w-pL-pR;
 
-  const padTop = 20;
-  const padBot = 28;
-  const padLeft = 0;
-  const plotH = h - padTop - padBot;
-  const plotW = w - padLeft;
+  const toX = i => pL + (i/(data.length-1))*pW;
+  const toY = p => pT + (1-(p-minP)/(maxP-minP))*pH;
 
-  const toX = (i) => padLeft + (i / (data.length - 1)) * plotW;
-  const toY = (p) => padTop + (1 - (p - minP) / (maxP - minP)) * plotH;
+  ctx.clearRect(0,0,w,h);
 
-  // Clear
-  ctx.clearRect(0, 0, w, h);
-
-  // Grid lines
-  ctx.strokeStyle = '#ffffff06';
+  // Grid
+  const cs = getComputedStyle(document.documentElement);
+  ctx.strokeStyle = cs.getPropertyValue('--chart-grid').trim();
   ctx.lineWidth = 1;
-  const gridLines = 4;
-  for (let i = 0; i <= gridLines; i++) {
-    const y = padTop + (plotH / gridLines) * i;
-    ctx.beginPath();
-    ctx.moveTo(padLeft, y);
-    ctx.lineTo(w, y);
-    ctx.stroke();
+  for (let i=0;i<=4;i++) {
+    const y = pT+(pH/4)*i;
+    ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(pL+pW,y); ctx.stroke();
   }
 
-  // Price labels on right
-  ctx.fillStyle = '#484f58';
+  // Y labels
+  ctx.fillStyle = cs.getPropertyValue('--text-muted').trim();
   ctx.font = '10px JetBrains Mono';
-  ctx.textAlign = 'right';
-  for (let i = 0; i <= gridLines; i++) {
-    const price = maxP - ((maxP - minP) / gridLines) * i;
-    const y = padTop + (plotH / gridLines) * i;
-    ctx.fillText('$' + Math.round(price).toLocaleString(), w - 2, y - 4);
+  ctx.textAlign = 'left';
+  for (let i=0;i<=4;i++) {
+    const price = maxP-((maxP-minP)/4)*i;
+    const y = pT+(pH/4)*i;
+    ctx.fillText('$'+Math.round(price).toLocaleString(), pL+pW+8, y+4);
   }
 
-  // Date labels on bottom
+  // X labels
   ctx.textAlign = 'center';
-  ctx.fillStyle = '#484f58';
-  const labelCount = Math.min(5, data.length);
-  for (let i = 0; i < labelCount; i++) {
-    const idx = Math.floor((data.length - 1) * i / (labelCount - 1));
-    const x = toX(idx);
-    const d = new Date(data[idx].timestamp * 1000);
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const label = activeRange === '1M' ?
-      `${d.getUTCDate()} ${months[d.getUTCMonth()]}` :
-      `${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
-    ctx.fillText(label, x, h - 6);
+  const lc = Math.min(6, data.length);
+  for (let i=0;i<lc;i++) {
+    const idx = Math.floor((data.length-1)*i/(lc-1));
+    const d = new Date(data[idx].timestamp*1000);
+    const ms = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const label = activeRange==='1M' ? `${d.getUTCDate()} ${ms[d.getUTCMonth()]}` : `${ms[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+    ctx.fillText(label, toX(idx), h-8);
   }
 
   // Gradient fill
-  const grad = ctx.createLinearGradient(0, padTop, 0, padTop + plotH);
-  grad.addColorStop(0, '#f7931a18');
-  grad.addColorStop(1, '#f7931a00');
-
+  const grad = ctx.createLinearGradient(0,pT,0,pT+pH);
+  grad.addColorStop(0, cs.getPropertyValue('--chart-fill-top').trim());
+  grad.addColorStop(1, cs.getPropertyValue('--chart-fill-bot').trim());
   ctx.beginPath();
   ctx.moveTo(toX(0), toY(data[0].price_usd));
-  for (let i = 1; i < data.length; i++) {
-    ctx.lineTo(toX(i), toY(data[i].price_usd));
-  }
-  ctx.lineTo(toX(data.length - 1), padTop + plotH);
-  ctx.lineTo(toX(0), padTop + plotH);
+  for (let i=1;i<data.length;i++) ctx.lineTo(toX(i), toY(data[i].price_usd));
+  ctx.lineTo(toX(data.length-1), pT+pH);
+  ctx.lineTo(toX(0), pT+pH);
   ctx.closePath();
   ctx.fillStyle = grad;
   ctx.fill();
@@ -730,125 +880,93 @@ function drawChart() {
   // Line
   ctx.beginPath();
   ctx.moveTo(toX(0), toY(data[0].price_usd));
-  for (let i = 1; i < data.length; i++) {
-    ctx.lineTo(toX(i), toY(data[i].price_usd));
-  }
+  for (let i=1;i<data.length;i++) ctx.lineTo(toX(i), toY(data[i].price_usd));
   ctx.strokeStyle = '#f7931a';
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Store chart geometry for hover
-  canvas._chartMeta = { data, toX, toY, padLeft, padTop, plotH, plotW, w, h };
+  canvas._meta = { data, toX, toY, pL, pW, pT, pH };
 }
 
-// ─── Chart Interaction ───
-const canvas = document.getElementById('chart');
-const tooltip = document.getElementById('tooltip');
-const crosshair = document.getElementById('crosshair');
+// ─── CHART HOVER ───
+const chartCanvas = document.getElementById('chart');
+const tip = document.getElementById('tooltip');
+const cross = document.getElementById('crosshair');
 
-canvas.addEventListener('mousemove', (e) => {
-  const meta = canvas._chartMeta;
-  if (!meta || meta.data.length < 2) return;
-
-  const rect = canvas.getBoundingClientRect();
+chartCanvas.addEventListener('mousemove', e => {
+  const m = chartCanvas._meta;
+  if (!m || m.data.length<2) return;
+  const rect = chartCanvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
-  const ratio = (x - meta.padLeft) / meta.plotW;
-  const idx = Math.max(0, Math.min(meta.data.length - 1, Math.round(ratio * (meta.data.length - 1))));
-  const d = meta.data[idx];
+  const ratio = Math.max(0, Math.min(1, (x-m.pL)/m.pW));
+  const idx = Math.round(ratio*(m.data.length-1));
+  const d = m.data[idx];
 
-  tooltip.querySelector('.tt-price').textContent = '$' + fmt(d.price_usd);
-  tooltip.querySelector('.tt-date').textContent = tsToShort(d.timestamp);
-  tooltip.querySelector('.tt-block').textContent = 'block #' + fmtInt(d.height);
+  tip.querySelector('.tt-price').textContent = '$'+fmt(d.price_usd);
+  tip.querySelector('.tt-date').textContent = tsToShort(d.timestamp);
+  tip.querySelector('.tt-block').textContent = 'Block #'+fmtInt(d.height);
 
-  const containerRect = canvas.parentElement.getBoundingClientRect();
-  const tx = meta.toX(idx);
-  const ty = meta.toY(d.price_usd);
-
-  // Position tooltip
-  let left = tx + 16;
-  if (left + 170 > containerRect.width - 16) left = tx - 170;
-  tooltip.style.left = (left + 16) + 'px';
-  tooltip.style.top = (ty + 10) + 'px';
-  tooltip.classList.add('visible');
-
-  crosshair.style.left = (tx + 16) + 'px';
-  crosshair.classList.add('visible');
+  const tx = m.toX(idx);
+  let left = tx+12;
+  const wrap = document.getElementById('chartWrap');
+  if (left+160 > wrap.clientWidth-10) left = tx-170;
+  tip.style.left = left+'px';
+  tip.style.top = (m.toY(d.price_usd)-10)+'px';
+  tip.classList.add('visible');
+  cross.style.left = tx+'px';
+  cross.classList.add('visible');
 });
 
-canvas.addEventListener('mouseleave', () => {
-  tooltip.classList.remove('visible');
-  crosshair.classList.remove('visible');
+chartCanvas.addEventListener('mouseleave', () => {
+  tip.classList.remove('visible');
+  cross.classList.remove('visible');
 });
 
-// ─── Timeframe Buttons ───
-document.querySelectorAll('.tf-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+// ─── TIMEFRAME ───
+document.querySelectorAll('.tf-btn').forEach(b => {
+  b.addEventListener('click', () => {
     document.querySelector('.tf-btn.active').classList.remove('active');
-    btn.classList.add('active');
-    activeRange = btn.dataset.range;
+    b.classList.add('active');
+    activeRange = b.dataset.range;
     drawChart();
   });
 });
 
-// ─── Search ───
-const searchInput = document.getElementById('searchInput');
-const searchBtn = document.getElementById('searchBtn');
-const searchResult = document.getElementById('searchResult');
-
+// ─── SEARCH ───
 async function doSearch() {
-  const q = searchInput.value.trim();
+  const q = document.getElementById('searchInput').value.trim();
   if (!q) return;
-
-  searchResult.classList.remove('visible', 'error');
-
+  const sr = document.getElementById('searchResult');
+  sr.classList.remove('visible','error');
   try {
     let data;
-    if (/^\d{4}-\d{2}-\d{2}$/.test(q)) {
-      data = await fetchJSON(`/api/price/date/${q}`);
-    } else if (/^\d+$/.test(q)) {
-      data = await fetchJSON(`/api/price/${q}`);
-    } else {
-      throw new Error('Enter a block height (e.g. 800000) or date (e.g. 2024-01-15)');
-    }
-
-    document.getElementById('srPrice').textContent = '$' + fmt(data.price_usd);
-    document.getElementById('srMeta').innerHTML =
-      `<span>block #${fmtInt(data.height)}</span>` +
-      `<span>${tsToShort(data.timestamp)}</span>` +
-      `<span>${tsToTime(data.timestamp)}</span>`;
-    searchResult.classList.add('visible');
-    searchResult.classList.remove('error');
-  } catch (e) {
-    document.getElementById('srPrice').textContent = '';
-    document.getElementById('srMeta').textContent = e.message || 'Not found';
-    searchResult.classList.add('visible', 'error');
+    if (/^\d{4}-\d{2}-\d{2}$/.test(q)) data = await fetchJSON(`/api/price/date/${q}`);
+    else if (/^\d+$/.test(q)) data = await fetchJSON(`/api/price/${q}`);
+    else throw new Error('Enter a block height (e.g. 800000) or date (e.g. 2024-01-15)');
+    document.getElementById('srPrice').textContent = '$'+fmt(data.price_usd);
+    document.getElementById('srMeta').innerHTML = `<span>Block #${fmtInt(data.height)}</span><span>${tsToShort(data.timestamp)}</span><span>${tsToTime(data.timestamp)}</span>`;
+    sr.classList.add('visible');
+  } catch(e) {
+    document.getElementById('srPrice').textContent='';
+    document.getElementById('srMeta').textContent=e.message||'Not found';
+    sr.classList.add('visible','error');
   }
 }
+document.getElementById('searchBtn').addEventListener('click', doSearch);
+document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 
-searchBtn.addEventListener('click', doSearch);
-searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+// ─── RESIZE ───
+window.addEventListener('resize', () => { if(chartData.length) drawChart(); });
 
-// ─── Resize ───
-window.addEventListener('resize', () => { if (chartData.length) drawChart(); });
-
-// ─── Init ───
+// ─── INIT ───
 async function init() {
   await loadHealth();
   await loadLatest();
   await load24hChange();
   await loadChart();
-
-  // Auto-refresh
-  setInterval(async () => {
-    await loadLatest();
-    await loadHealth();
-    await load24hChange();
-  }, 30000);
-
-  // Refresh chart every 5 minutes
+  setInterval(async()=>{ await loadLatest(); await loadHealth(); await load24hChange(); }, 30000);
   setInterval(loadChart, 300000);
 }
-
 init();
 </script>
 </body>
