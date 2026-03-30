@@ -8,7 +8,7 @@ services:
       PROXY_AUTH_ADD: "false"
 
   oracle:
-    image: ghcr.io/lunaticoin/bitcoin-price-oracle:v0.1.0@sha256:2b53ab399174916098414989b89350830a6a449637b2df56c29ff7bc765eb449
+    image: ghcr.io/lunaticoin/bitcoin-price-oracle:v0.1.1@sha256:a69fd4fb4b711501111f0831132e45fcab35044d0e7a58f919fc23c840215d95
     init: true
     restart: on-failure
     stop_grace_period: 1m
