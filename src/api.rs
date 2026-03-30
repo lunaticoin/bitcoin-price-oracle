@@ -66,12 +66,12 @@ pub struct RangeParams {
 }
 
 const INDEX_HTML: &str = include_str!("../static/index.html");
-const FAVICON_SVG: &str = include_str!("../logo.svg");
+const FAVICON_PNG: &[u8] = include_bytes!("../favicon.png");
 
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/", get(serve_index))
-        .route("/favicon.svg", get(serve_favicon))
+        .route("/favicon.png", get(serve_favicon))
         .route("/api/price/latest", get(get_latest_price))
         .route("/api/price/date/{date}", get(get_price_at_date))
         .route("/api/price/range", get(get_price_range))
@@ -85,7 +85,7 @@ async fn serve_index() -> impl IntoResponse {
 }
 
 async fn serve_favicon() -> impl IntoResponse {
-    ([(header::CONTENT_TYPE, "image/svg+xml")], FAVICON_SVG)
+    ([(header::CONTENT_TYPE, "image/png")], FAVICON_PNG)
 }
 
 async fn get_price_at_height(

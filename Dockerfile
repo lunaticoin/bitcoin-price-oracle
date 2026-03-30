@@ -7,7 +7,7 @@ WORKDIR /build
 COPY Cargo.toml Cargo.lock ./
 COPY src/ src/
 COPY static/ static/
-COPY logo.svg ./
+COPY logo.svg favicon.png ./
 
 RUN cargo build --release --locked
 
