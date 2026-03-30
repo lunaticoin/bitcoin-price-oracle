@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
-use axum::response::IntoResponse;
+use axum::response::{Html, IntoResponse};
 use axum::routing::get;
 use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
@@ -64,14 +64,21 @@ pub struct RangeParams {
     pub to: String,
 }
 
+const INDEX_HTML: &str = include_str!("../static/index.html");
+
 pub fn router(state: AppState) -> Router {
     Router::new()
+        .route("/", get(serve_index))
         .route("/api/price/latest", get(get_latest_price))
         .route("/api/price/date/{date}", get(get_price_at_date))
         .route("/api/price/range", get(get_price_range))
         .route("/api/price/{height}", get(get_price_at_height))
         .route("/health", get(health_check))
         .with_state(state)
+}
+
+async fn serve_index() -> impl IntoResponse {
+    Html(INDEX_HTML)
 }
 
 async fn get_price_at_height(
