@@ -2,13 +2,13 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Arc;
 
 use axum::extract::{Path, Query, State};
-use axum::http::StatusCode;
+use axum::http::{StatusCode, HeaderValue, Method};
 use axum::http::header;
-use axum::response::{Html, IntoResponse};
+use axum::middleware::{self, Next};
+use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
-use tower_http::cors::CorsLayer;
 
 use crate::storage::PriceStore;
 
@@ -94,7 +94,7 @@ const FONT_JBMONO_500: &[u8] = include_bytes!("../static/fonts/jetbrains-500.wof
 const WOFF2: &str = "font/woff2";
 
 pub fn router(state: AppState) -> Router {
-    Router::new()
+    let r = Router::new()
         .route("/", get(serve_index))
         .route("/favicon.png", get(serve_favicon))
         .route("/fonts/cinzel-decorative-400.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CINZEL_DEC) }))
@@ -114,8 +114,28 @@ pub fn router(state: AppState) -> Router {
         .route("/api/settings/cors", get(get_cors_status))
         .route("/api/settings/cors", post(toggle_cors))
         .route("/api/tor", get(get_tor_address))
-        .with_state(state)
-        .layer(CorsLayer::permissive())
+        .with_state(state.clone());
+
+    let cors_flag = state.cors_enabled.clone();
+    r.layer(middleware::from_fn(move |req: axum::extract::Request, next: Next| {
+        let flag = cors_flag.clone();
+        async move {
+            let is_preflight = *req.method() == Method::OPTIONS;
+            let mut response: Response = next.run(req).await;
+
+            if flag.load(Ordering::Relaxed) {
+                let h = response.headers_mut();
+                h.insert(header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue::from_static("*"));
+                h.insert(header::ACCESS_CONTROL_ALLOW_METHODS, HeaderValue::from_static("GET, POST, OPTIONS"));
+                h.insert(header::ACCESS_CONTROL_ALLOW_HEADERS, HeaderValue::from_static("*"));
+                if is_preflight {
+                    *response.status_mut() = StatusCode::NO_CONTENT;
+                }
+            }
+
+            response
+        }
+    }))
 }
 
 async fn serve_index() -> impl IntoResponse {
