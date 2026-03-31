@@ -45,6 +45,10 @@ struct Args {
     /// HTTP server port
     #[arg(long, env = "PORT", default_value = "3200")]
     port: u16,
+
+    /// Enable CORS for external API access
+    #[arg(long, env = "CORS_ENABLED", default_value = "false")]
+    cors_enabled: bool,
 }
 
 #[tokio::main]
@@ -82,9 +86,9 @@ async fn main() {
     });
 
     // Start API server immediately
-    let app = api::router(state);
+    let app = api::router(state, args.cors_enabled);
     let addr = format!("0.0.0.0:{}", args.port);
-    info!("API server starting on {}", addr);
+    info!("API server starting on {} (CORS: {})", addr, if args.cors_enabled { "enabled" } else { "disabled" });
 
     let listener = TcpListener::bind(&addr).await.expect("Failed to bind");
     axum::serve(listener, app)

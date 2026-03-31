@@ -80,7 +80,7 @@ body::before {
 .crystal-ball::before { content: ''; position: absolute; top: 12%; left: 22%; width: 30%; height: 20%; background: radial-gradient(ellipse, rgba(255,255,255,0.12) 0%, transparent 70%); border-radius: 50%; transform: rotate(-20deg); }
 .crystal-ball::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(201,168,76,0.15); box-shadow: inset 0 0 30px rgba(201,168,76,0.05); }
 .crystal-price { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 80%; }
-.crystal-price-value { font-family: var(--font-display); font-size: clamp(22px, 4vw, 32px); color: var(--gold-bright); text-shadow: 0 0 20px rgba(228,199,107,0.3); line-height: 1.1; }
+.crystal-price-value { font-family: var(--font-display); font-size: clamp(28px, 5.5vw, 34px); color: var(--gold-bright); text-shadow: 0 0 20px rgba(228,199,107,0.3); line-height: 1.1; }
 .crystal-price-value .dollar { font-size: 0.7em; opacity: 0.7; font-family: var(--font-heading); }
 .crystal-change { font-family: var(--font-mono); font-size: 13px; margin-top: 6px; }
 .crystal-change.up { color: var(--emerald); }
@@ -94,7 +94,7 @@ body::before {
 .glyph { color: var(--gold-dim); font-size: 14px; }
 
 /* CHART */
-.chart-section { padding: 24px 0; border-left: 2px solid var(--border-glow); padding-left: 20px; }
+.chart-section { padding: 24px 0; }
 .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .chart-title { font-family: var(--font-heading); font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
 .tf-group { display: flex; gap: 2px; }
@@ -114,7 +114,7 @@ body::before {
 .chart-dot.visible { opacity: 1; }
 
 /* SEARCH */
-.scrying { padding: 24px 0; border-left: 2px solid var(--border-glow); padding-left: 20px; }
+.scrying { padding: 24px 0; }
 .scrying-title { font-family: var(--font-heading); font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
 .section-hint { font-family: var(--font-body); font-size: 14px; color: var(--text-dim); font-style: italic; margin-bottom: 12px; }
 .scrying-box { display: flex; border: 1px solid var(--border); transition: border-color 0.3s, box-shadow 0.3s; }
@@ -171,7 +171,6 @@ body::before {
   .hero-meta { flex-direction: column; gap: 6px; }
   .specs-grid { grid-template-columns: 1fr; }
   .nav-links { gap: 12px; }
-  .chart-section, .scrying { padding-left: 12px; }
 }
 </style>
 </head>
@@ -202,11 +201,28 @@ body::before {
         </div>
       </div>
       <div class="crystal-base"></div>
-      <div class="hero-tagline" data-i18n="hero.tagline">Precio on-chain derivado de tu propio nodo. Sin APIs externas.</div>
       <div class="hero-inscription" data-i18n="hero.perbtc">por Bitcoin</div>
+      <div class="hero-tagline"><span data-i18n="hero.tagline1">Precio calculado en tu propio nodo. Sin consultas externas.</span><br><span data-i18n="hero.tagline2">Parece magia pero son visiones de la acci&oacute;n humana en la cadena de bloques.</span></div>
       <div class="hero-meta">
         <span><span class="glyph">&#9830;</span> <span data-i18n="hero.block">Bloque</span> <span id="blockHeight" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
         <span><span class="glyph">&#9719;</span> <span id="blockTime" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+      </div>
+    </div>
+
+    <div class="divider">&#10038;</div>
+
+    <div class="scrying">
+      <div class="scrying-title" data-i18n="search.title">Consultar el pasado</div>
+      <div class="section-hint" data-i18n="search.hint">Busca precios históricos por altura de bloque o fecha</div>
+      <div class="scrying-box">
+        <div class="scrying-symbol">&#10022;</div>
+        <input class="scrying-input" id="searchInput" type="text" data-i18n-placeholder="search.placeholder">
+        <button class="scrying-invoke" id="searchBtn" data-i18n="search.btn">Consultar</button>
+      </div>
+      <div class="scrying-hint" data-i18n="search.format">Introduce una altura de bloque numérica o una fecha en formato AAAA-MM-DD</div>
+      <div class="scrying-result" id="searchResult">
+        <div class="sr-price" id="srPrice"></div>
+        <div class="sr-meta" id="srMeta"></div>
       </div>
     </div>
 
@@ -231,23 +247,6 @@ body::before {
           <div class="tt-date"></div>
           <div class="tt-block"></div>
         </div>
-      </div>
-    </div>
-
-    <div class="divider">&#10038;</div>
-
-    <div class="scrying">
-      <div class="scrying-title" data-i18n="search.title">Consultar el pasado</div>
-      <div class="section-hint" data-i18n="search.hint">Busca precios históricos por altura de bloque o fecha</div>
-      <div class="scrying-box">
-        <div class="scrying-symbol">&#10022;</div>
-        <input class="scrying-input" id="searchInput" type="text" data-i18n-placeholder="search.placeholder">
-        <button class="scrying-invoke" id="searchBtn" data-i18n="search.btn">Consultar</button>
-      </div>
-      <div class="scrying-hint" data-i18n="search.format">Introduce una altura de bloque numérica o una fecha en formato AAAA-MM-DD</div>
-      <div class="scrying-result" id="searchResult">
-        <div class="sr-price" id="srPrice"></div>
-        <div class="sr-meta" id="srMeta"></div>
       </div>
     </div>
   </div>
@@ -315,10 +314,29 @@ body::before {
       <div class="spec-item"><span class="spec-label" data-i18n="spec.storage">Almacenamiento</span><span class="spec-value">~12 MB</span></div>
       <div class="spec-item"><span class="spec-label">RAM</span><span class="spec-value">&lt;100 MB</span></div>
     </div>
+
+    <div class="divider" style="margin:20px 0">&#10038;</div>
+
+    <div class="spell-block">
+      <div class="spell-header"><span class="spell-method" data-i18n="access.title">ACCESO REMOTO</span></div>
+      <div class="spell-desc" data-i18n-html="access.tor">
+        <b>Tor:</b> Umbrel crea autom&aacute;ticamente un hidden service (.onion) para El Or&aacute;culo. Enc&eacute;ntralo en <code>Umbrel &rarr; Settings &rarr; Tor</code>. Permite consultar la API desde cualquier lugar sin abrir puertos.
+      </div>
+      <div class="spell-desc" style="margin-top:12px" data-i18n-html="access.cors">
+        <b>CORS:</b> Para consultar la API desde una webapp externa (ej. tu propia web), activa CORS editando <code>docker-compose.yml</code> y cambiando <code>CORS_ENABLED</code> a <code>"true"</code>. Luego reinicia la app desde Umbrel.
+      </div>
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example"># En docker-compose.yml de la app:
+CORS_ENABLED: "true"
+
+# Ejemplo de uso desde webapp externa:
+fetch("http://tu-nodo:3200/api/price/latest")
+  .then(r => r.json())
+  .then(d => console.log(d.price_usd))</div></div>
+    </div>
   </div>
 
   <footer class="footer">
-    <div><a href="https://github.com/lunaticoin/bitcoin-price-oracle" target="_blank" rel="noopener noreferrer">bitcoin-price-oracle</a> &middot; <a href="https://github.com/bitcoinresearchkit/brk" target="_blank" rel="noopener noreferrer">brk_oracle</a></div>
+    <div data-i18n-html="footer.credits"><a href="https://github.com/lunaticoin/el-oraculo" target="_blank" rel="noopener noreferrer">El Or&aacute;culo</a>, basado en el genial trabajo de <a href="https://x.com/_nym21_" target="_blank" rel="noopener noreferrer">nym21</a> en <a href="https://github.com/bitcoinresearchkit/brk" target="_blank" rel="noopener noreferrer">BRK</a> y de las visiones de <a href="https://x.com/SteveSimple" target="_blank" rel="noopener noreferrer">Simple Steve</a></div>
     <div class="sync-bar-inline">
       <div class="sync-bar-track"><div class="sync-bar-fill" id="syncBarFill" style="width:0%"></div></div>
       <span id="syncProgress" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -333,7 +351,9 @@ body::before {
 const I18N = {
   es: {
     'nav.visions': 'Visiones', 'nav.dashboard': 'Panel', 'nav.grimoire': 'Grimorio', 'nav.apidocs': 'Docs API',
-    'hero.subtitle': 'El Oráculo revela', 'hero.tagline': 'Precio on-chain derivado de tu propio nodo. Sin APIs externas.',
+    'hero.subtitle': 'El Oráculo revela',
+    'hero.tagline1': 'Precio calculado en tu propio nodo. Sin consultas externas.',
+    'hero.tagline2': 'Parece magia pero son visiones de la acción humana en la cadena de bloques.',
     'hero.perbtc': 'por Bitcoin', 'hero.block': 'Bloque',
     'chart.title': 'Historial de precio',
     'search.title': 'Consultar el pasado', 'search.hint': 'Busca precios históricos por altura de bloque o fecha',
@@ -350,10 +370,16 @@ const I18N = {
     'copy': 'Copiar', 'copied': '¡Copiado!',
     'spec.algo': 'Algoritmo', 'spec.source': 'Fuente', 'spec.accuracy': 'Precisión', 'spec.resolution': 'Resolución', 'spec.storage': 'Almacenamiento',
     'sync.syncing': 'sincronizando', 'sync.synced': 'sincronizado',
+    'footer.credits': '<a href="https://github.com/lunaticoin/el-oraculo" target="_blank" rel="noopener noreferrer">El Oráculo</a>, basado en el genial trabajo de <a href="https://x.com/_nym21_" target="_blank" rel="noopener noreferrer">nym21</a> en <a href="https://github.com/bitcoinresearchkit/brk" target="_blank" rel="noopener noreferrer">BRK</a> y de las visiones de <a href="https://x.com/SteveSimple" target="_blank" rel="noopener noreferrer">Simple Steve</a>',
+    'access.title': 'ACCESO REMOTO',
+    'access.tor': '<b>Tor:</b> Umbrel crea automáticamente un hidden service (.onion) para El Oráculo. Encuéntralo en <code>Umbrel → Settings → Tor</code>. Permite consultar la API desde cualquier lugar sin abrir puertos.',
+    'access.cors': '<b>CORS:</b> Para consultar la API desde una webapp externa (ej. tu propia web), activa CORS editando <code>docker-compose.yml</code> y cambiando <code>CORS_ENABLED</code> a <code>"true"</code>. Luego reinicia la app desde Umbrel.',
   },
   en: {
     'nav.visions': 'Visions', 'nav.dashboard': 'Dashboard', 'nav.grimoire': 'Grimoire', 'nav.apidocs': 'API Docs',
-    'hero.subtitle': 'The Oracle reveals', 'hero.tagline': 'On-chain price derived from your own node. No external APIs.',
+    'hero.subtitle': 'The Oracle reveals',
+    'hero.tagline1': 'Price computed on your own node. No external queries.',
+    'hero.tagline2': 'It looks like magic but these are visions of human action on the blockchain.',
     'hero.perbtc': 'per Bitcoin', 'hero.block': 'Block',
     'chart.title': 'Price History',
     'search.title': 'Scry the past', 'search.hint': 'Look up historical prices by block height or date',
@@ -370,6 +396,10 @@ const I18N = {
     'copy': 'Copy', 'copied': 'Copied!',
     'spec.algo': 'Algorithm', 'spec.source': 'Source', 'spec.accuracy': 'Accuracy', 'spec.resolution': 'Resolution', 'spec.storage': 'Storage',
     'sync.syncing': 'syncing', 'sync.synced': 'synced',
+    'footer.credits': '<a href="https://github.com/lunaticoin/el-oraculo" target="_blank" rel="noopener noreferrer">El Oráculo</a>, based on the brilliant work of <a href="https://x.com/_nym21_" target="_blank" rel="noopener noreferrer">nym21</a> on <a href="https://github.com/bitcoinresearchkit/brk" target="_blank" rel="noopener noreferrer">BRK</a> and the visions of <a href="https://x.com/SteveSimple" target="_blank" rel="noopener noreferrer">Simple Steve</a>',
+    'access.title': 'REMOTE ACCESS',
+    'access.tor': '<b>Tor:</b> Umbrel automatically creates a hidden service (.onion) for El Oráculo. Find it in <code>Umbrel → Settings → Tor</code>. Query the API from anywhere without opening ports.',
+    'access.cors': '<b>CORS:</b> To query the API from an external webapp, enable CORS by editing <code>docker-compose.yml</code> and setting <code>CORS_ENABLED</code> to <code>"true"</code>. Then restart the app from Umbrel.',
   }
 };
 
@@ -475,9 +505,7 @@ async function load24hChange() {
     const ch = ((latestPrice.price_usd - prev.price_usd) / prev.price_usd) * 100;
     const el = document.getElementById('priceChange');
     el.classList.remove('skeleton');
-    const elapsed = latestPrice.timestamp - prev.timestamp;
-    const hours = Math.round(elapsed / 3600);
-    el.textContent = (ch>=0?'+':'')+ch.toFixed(2)+'% (~'+hours+'h)';
+    el.textContent = (ch>=0?'+':'')+ch.toFixed(2)+'%  24h';
     el.className = 'crystal-change ' + (ch>=0?'up':'down');
   } catch(e) {}
 }

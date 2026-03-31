@@ -23,6 +23,7 @@ services:
       BLOCKS_DIR: /bitcoin/blocks
       DATA_DIR: /data
       PORT: "3200"
+      CORS_ENABLED: "false"
     networks:
       default:
         ipv4_address: ${APP_LUNATICOIN_PRICE_ORACLE_IP}

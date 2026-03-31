@@ -8,6 +8,7 @@ use axum::response::{Html, IntoResponse};
 use axum::routing::get;
 use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
+use tower_http::cors::CorsLayer;
 
 use crate::storage::PriceStore;
 
@@ -89,8 +90,8 @@ const FONT_JBMONO_500: &[u8] = include_bytes!("../static/fonts/jetbrains-500.wof
 
 const WOFF2: &str = "font/woff2";
 
-pub fn router(state: AppState) -> Router {
-    Router::new()
+pub fn router(state: AppState, cors_enabled: bool) -> Router {
+    let router = Router::new()
         .route("/", get(serve_index))
         .route("/favicon.png", get(serve_favicon))
         .route("/fonts/cinzel-decorative-400.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CINZEL_DEC) }))
@@ -107,7 +108,13 @@ pub fn router(state: AppState) -> Router {
         .route("/api/price/range", get(get_price_range))
         .route("/api/price/{height}", get(get_price_at_height))
         .route("/health", get(health_check))
-        .with_state(state)
+        .with_state(state);
+
+    if cors_enabled {
+        router.layer(CorsLayer::permissive())
+    } else {
+        router
+    }
 }
 
 async fn serve_index() -> impl IntoResponse {
