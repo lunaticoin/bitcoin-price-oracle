@@ -24,6 +24,7 @@ services:
       DATA_DIR: /data
       PORT: "3200"
       CORS_ENABLED: "false"
+      APP_HIDDEN_SERVICE: ${APP_HIDDEN_SERVICE}
     networks:
       default:
         ipv4_address: ${APP_LUNATICOIN_PRICE_ORACLE_IP}

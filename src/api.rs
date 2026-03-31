@@ -18,6 +18,7 @@ pub struct AppState {
     pub chain_tip: Arc<AtomicUsize>,
     pub cors_enabled: Arc<AtomicBool>,
     pub data_dir: String,
+    pub hidden_service: String,
 }
 
 #[derive(Serialize)]
@@ -374,30 +375,18 @@ struct TorStatus {
     address: Option<String>,
 }
 
-async fn get_tor_address() -> Json<TorStatus> {
-    // Umbrel stores tor hostnames in predictable paths
-    let paths = [
-        "/home/umbrel/umbrel/tor/data/app-lunaticoin-price-oracle/hostname",
-        "/home/umbrel/umbrel/tor/data/app-lunaticoin-price-oracle-web/hostname",
-        "/data/tor/hostname",
-    ];
-
-    for path in &paths {
-        if let Ok(contents) = std::fs::read_to_string(path) {
-            let addr = contents.trim().to_string();
-            if !addr.is_empty() {
-                return Json(TorStatus {
-                    available: true,
-                    address: Some(addr),
-                });
-            }
-        }
+async fn get_tor_address(State(s): State<AppState>) -> Json<TorStatus> {
+    if s.hidden_service.is_empty() {
+        Json(TorStatus {
+            available: false,
+            address: None,
+        })
+    } else {
+        Json(TorStatus {
+            available: true,
+            address: Some(s.hidden_service.clone()),
+        })
     }
-
-    Json(TorStatus {
-        available: false,
-        address: None,
-    })
 }
 
 fn round_price(price: f64) -> f64 {

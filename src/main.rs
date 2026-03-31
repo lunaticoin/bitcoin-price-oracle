@@ -49,6 +49,10 @@ struct Args {
     /// Enable CORS for external API access
     #[arg(long, env = "CORS_ENABLED", default_value = "false")]
     cors_enabled: bool,
+
+    /// Tor hidden service address (injected by Umbrel)
+    #[arg(long, env = "APP_HIDDEN_SERVICE", default_value = "")]
+    hidden_service: String,
 }
 
 #[tokio::main]
@@ -74,6 +78,7 @@ async fn main() {
         chain_tip: chain_tip.clone(),
         cors_enabled: Arc::new(AtomicBool::new(cors_persisted)),
         data_dir: args.data_dir.clone(),
+        hidden_service: args.hidden_service.clone(),
     };
 
     let sync_config = SyncConfig {
