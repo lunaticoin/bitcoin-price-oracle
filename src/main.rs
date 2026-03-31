@@ -2,7 +2,7 @@ mod api;
 mod storage;
 mod sync;
 
-use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::{AtomicBool, AtomicUsize};
 use std::sync::Arc;
 
 use clap::Parser;
@@ -64,9 +64,16 @@ async fn main() {
     let store = Arc::new(PriceStore::open(std::path::Path::new(&args.data_dir)));
     let chain_tip = Arc::new(AtomicUsize::new(0));
 
+    // Load persisted CORS setting or use CLI flag
+    let cors_persisted = std::fs::read_to_string(
+        std::path::Path::new(&args.data_dir).join("cors_enabled")
+    ).ok().map(|s| s.trim() == "true").unwrap_or(args.cors_enabled);
+
     let state = AppState {
         store: store.clone(),
         chain_tip: chain_tip.clone(),
+        cors_enabled: Arc::new(AtomicBool::new(cors_persisted)),
+        data_dir: args.data_dir.clone(),
     };
 
     let sync_config = SyncConfig {
@@ -86,9 +93,9 @@ async fn main() {
     });
 
     // Start API server immediately
-    let app = api::router(state, args.cors_enabled);
+    let app = api::router(state);
     let addr = format!("0.0.0.0:{}", args.port);
-    info!("API server starting on {} (CORS: {})", addr, if args.cors_enabled { "enabled" } else { "disabled" });
+    info!("API server starting on {} (CORS: {})", addr, if cors_persisted { "enabled" } else { "disabled" });
 
     let listener = TcpListener::bind(&addr).await.expect("Failed to bind");
     axum::serve(listener, app)

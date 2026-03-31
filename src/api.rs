@@ -1,11 +1,11 @@
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Arc;
 
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::http::header;
 use axum::response::{Html, IntoResponse};
-use axum::routing::get;
+use axum::routing::{get, post};
 use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
 use tower_http::cors::CorsLayer;
@@ -16,6 +16,8 @@ use crate::storage::PriceStore;
 pub struct AppState {
     pub store: Arc<PriceStore>,
     pub chain_tip: Arc<AtomicUsize>,
+    pub cors_enabled: Arc<AtomicBool>,
+    pub data_dir: String,
 }
 
 #[derive(Serialize)]
@@ -90,8 +92,8 @@ const FONT_JBMONO_500: &[u8] = include_bytes!("../static/fonts/jetbrains-500.wof
 
 const WOFF2: &str = "font/woff2";
 
-pub fn router(state: AppState, cors_enabled: bool) -> Router {
-    let router = Router::new()
+pub fn router(state: AppState) -> Router {
+    Router::new()
         .route("/", get(serve_index))
         .route("/favicon.png", get(serve_favicon))
         .route("/fonts/cinzel-decorative-400.woff2", get(|| async { ([(header::CONTENT_TYPE, WOFF2)], FONT_CINZEL_DEC) }))
@@ -108,13 +110,11 @@ pub fn router(state: AppState, cors_enabled: bool) -> Router {
         .route("/api/price/range", get(get_price_range))
         .route("/api/price/{height}", get(get_price_at_height))
         .route("/health", get(health_check))
-        .with_state(state);
-
-    if cors_enabled {
-        router.layer(CorsLayer::permissive())
-    } else {
-        router
-    }
+        .route("/api/settings/cors", get(get_cors_status))
+        .route("/api/settings/cors", post(toggle_cors))
+        .route("/api/tor", get(get_tor_address))
+        .with_state(state)
+        .layer(CorsLayer::permissive())
 }
 
 async fn serve_index() -> impl IntoResponse {
@@ -337,6 +337,66 @@ async fn health_check(State(s): State<AppState>) -> Json<HealthResponse> {
         chain_tip: tip,
         syncing: synced < tip,
         progress_percent: (progress * 100.0).round() / 100.0,
+    })
+}
+
+// ─── CORS toggle ───
+
+#[derive(Serialize)]
+struct CorsStatus {
+    enabled: bool,
+}
+
+async fn get_cors_status(State(s): State<AppState>) -> Json<CorsStatus> {
+    Json(CorsStatus {
+        enabled: s.cors_enabled.load(Ordering::Relaxed),
+    })
+}
+
+async fn toggle_cors(State(s): State<AppState>) -> Json<CorsStatus> {
+    let current = s.cors_enabled.load(Ordering::Relaxed);
+    let new_val = !current;
+    s.cors_enabled.store(new_val, Ordering::Relaxed);
+
+    // Persist to data dir
+    let path = std::path::Path::new(&s.data_dir).join("cors_enabled");
+    let _ = std::fs::write(&path, if new_val { "true" } else { "false" });
+    tracing::info!("CORS toggled to {}", new_val);
+
+    Json(CorsStatus { enabled: new_val })
+}
+
+// ─── Tor address ───
+
+#[derive(Serialize)]
+struct TorStatus {
+    available: bool,
+    address: Option<String>,
+}
+
+async fn get_tor_address() -> Json<TorStatus> {
+    // Umbrel stores tor hostnames in predictable paths
+    let paths = [
+        "/home/umbrel/umbrel/tor/data/app-lunaticoin-price-oracle/hostname",
+        "/home/umbrel/umbrel/tor/data/app-lunaticoin-price-oracle-web/hostname",
+        "/data/tor/hostname",
+    ];
+
+    for path in &paths {
+        if let Ok(contents) = std::fs::read_to_string(path) {
+            let addr = contents.trim().to_string();
+            if !addr.is_empty() {
+                return Json(TorStatus {
+                    available: true,
+                    address: Some(addr),
+                });
+            }
+        }
+    }
+
+    Json(TorStatus {
+        available: false,
+        address: None,
     })
 }
 

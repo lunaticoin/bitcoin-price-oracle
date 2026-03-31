@@ -21,7 +21,7 @@
   --void: #0c0a14; --abyss: #110e1d; --deep: #1a1530; --surface: #221c3a;
   --border: rgba(201,168,76,0.12); --border-glow: rgba(201,168,76,0.25);
   --gold: #c9a84c; --gold-bright: #e4c76b; --gold-dim: #8a7234; --gold-bg: rgba(201,168,76,0.06);
-  --text: #c8bfa0; --text-dim: #6e6555; --text-bright: #e8dfc0;
+  --text: #d8d0b8; --text-dim: #8a8070; --text-bright: #efe8d4;
   --purple: #7b5ea7; --crimson: #a84040; --emerald: #5a9a6a;
   --font-display: 'Cinzel Decorative', 'Cinzel', serif;
   --font-heading: 'Cinzel', serif;
@@ -29,7 +29,7 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
-body { background: var(--void); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+body { background: var(--void); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
 
 body::before {
   content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
@@ -87,16 +87,17 @@ body::before {
 .crystal-change.down { color: var(--crimson); }
 .crystal-base { width: 90px; height: 12px; margin: -8px auto 0; background: linear-gradient(to bottom, var(--gold-dim) 0%, #3a3018 100%); border-radius: 0 0 50% 50% / 0 0 100% 100%; position: relative; }
 .crystal-base::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 120px; height: 6px; background: linear-gradient(to bottom, #3a3018, var(--deep)); border-radius: 0 0 50% 50% / 0 0 100% 100%; opacity: 0.7; }
-.hero-tagline { font-family: var(--font-body); font-size: 17px; color: var(--text); margin-top: 20px; font-style: italic; }
+.hero-tagline { font-family: var(--font-body); font-size: 17px; color: var(--text-dim); margin-top: 20px; font-style: italic; }
 .hero-inscription { font-family: var(--font-display); font-size: clamp(20px, 4vw, 28px); color: var(--gold); margin-top: 4px; letter-spacing: 0.04em; }
 .hero-meta { display: flex; justify-content: center; gap: 24px; margin-top: 14px; font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); }
 .hero-meta span { display: flex; align-items: center; gap: 4px; }
 .glyph { color: var(--gold-dim); font-size: 14px; }
+.disclaimer { font-family: var(--font-body); font-size: 13px; color: var(--text-dim); margin-top: 16px; font-style: italic; opacity: 0.6; }
 
 /* CHART */
 .chart-section { padding: 24px 0; }
 .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.chart-title { font-family: var(--font-heading); font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+.chart-title { font-family: var(--font-heading); font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); }
 .tf-group { display: flex; gap: 2px; }
 .tf-btn { background: transparent; border: 1px solid var(--border); color: var(--text-dim); font-family: var(--font-mono); font-size: 13px; padding: 8px 14px; min-height: 44px; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
 .tf-btn:hover { border-color: var(--border-glow); color: var(--text); }
@@ -115,8 +116,8 @@ body::before {
 
 /* SEARCH */
 .scrying { padding: 24px 0; }
-.scrying-title { font-family: var(--font-heading); font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
-.section-hint { font-family: var(--font-body); font-size: 14px; color: var(--text-dim); font-style: italic; margin-bottom: 12px; }
+.scrying-title { font-family: var(--font-heading); font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); margin-bottom: 4px; }
+.section-hint { font-family: var(--font-body); font-size: 15px; color: var(--text-dim); font-style: italic; margin-bottom: 12px; }
 .scrying-box { display: flex; border: 1px solid var(--border); transition: border-color 0.3s, box-shadow 0.3s; }
 .scrying-box:focus-within { border-color: var(--border-glow); box-shadow: 0 0 20px rgba(123,94,167,0.08); }
 .scrying-symbol { padding: 12px 14px; color: var(--gold-dim); font-family: var(--font-display); font-size: 16px; border-right: 1px solid var(--border); background: rgba(201,168,76,0.02); display: flex; align-items: center; }
@@ -125,7 +126,7 @@ body::before {
 .scrying-invoke { background: none; border: none; border-left: 1px solid var(--border); color: var(--gold-dim); font-family: var(--font-heading); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 20px; min-height: 44px; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
 .scrying-invoke:hover { color: var(--gold); background: var(--gold-bg); }
 .scrying-invoke:active { transform: scale(0.97); }
-.scrying-hint { font-family: var(--font-body); font-size: 13px; color: var(--text-dim); margin-top: 6px; font-style: italic; opacity: 0.7; }
+.scrying-hint { font-family: var(--font-body); font-size: 14px; color: var(--text-dim); margin-top: 6px; font-style: italic; opacity: 0.7; }
 .scrying-result { margin-top: 12px; padding: 16px; border: 1px solid var(--border); background: rgba(26,21,48,0.3); display: none; text-align: center; }
 .scrying-result.visible { display: block; animation: reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 30px rgba(201,168,76,0.05); border-color: var(--border-glow); }
 .scrying-result.error { border-color: rgba(168,64,64,0.3); box-shadow: none; }
@@ -158,10 +159,10 @@ body::before {
 .spec-label { color: var(--text-dim); font-style: italic; }
 .spec-value { color: var(--text); font-family: var(--font-mono); font-size: 13px; }
 
-.footer { padding: 20px 0; border-top: 1px solid var(--border); margin-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-dim); }
+.footer { padding: 20px 0; border-top: 1px solid var(--border); margin-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-dim); }
 .footer a { color: var(--text-dim); text-decoration: none; transition: color 0.3s; }
 .footer a:hover { color: var(--gold); }
-.sync-bar-inline { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 13px; }
+.sync-bar-inline { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 14px; }
 .sync-bar-track { width: 40px; height: 3px; background: var(--border-glow); overflow: hidden; border-radius: 2px; }
 .sync-bar-fill { height: 100%; background: var(--emerald); transition: width 0.5s; border-radius: 2px; }
 
@@ -207,6 +208,7 @@ body::before {
         <span><span class="glyph">&#9830;</span> <span data-i18n="hero.block">Bloque</span> <span id="blockHeight" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
         <span><span class="glyph">&#9719;</span> <span id="blockTime" class="skeleton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
       </div>
+      <div class="disclaimer" data-i18n="hero.disclaimer">Precio estimado con un margen de error del 0.11%. No es asesor&iacute;a financiera.</div>
     </div>
 
     <div class="divider">&#10038;</div>
@@ -319,16 +321,17 @@ body::before {
 
     <div class="spell-block">
       <div class="spell-header"><span class="spell-method" data-i18n="access.title">ACCESO REMOTO</span></div>
-      <div class="spell-desc" data-i18n-html="access.tor">
-        <b>Tor:</b> Umbrel crea autom&aacute;ticamente un hidden service (.onion) para El Or&aacute;culo. Enc&eacute;ntralo en <code>Umbrel &rarr; Settings &rarr; Tor</code>. Permite consultar la API desde cualquier lugar sin abrir puertos.
-      </div>
-      <div class="spell-desc" style="margin-top:12px" data-i18n-html="access.cors">
-        <b>CORS:</b> Para consultar la API desde una webapp externa (ej. tu propia web), activa CORS editando <code>docker-compose.yml</code> y cambiando <code>CORS_ENABLED</code> a <code>"true"</code>. Luego reinicia la app desde Umbrel.
-      </div>
-      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example"># En docker-compose.yml de la app:
-CORS_ENABLED: "true"
 
-# Ejemplo de uso desde webapp externa:
+      <div class="spell-desc" style="margin-bottom:10px"><b>Tor</b></div>
+      <div id="torStatus" style="padding:10px 14px;border:1px solid var(--border);margin-bottom:16px;font-family:var(--font-mono);font-size:13px;color:var(--text-dim);" data-i18n="access.tor.loading">Buscando direcci&oacute;n .onion...</div>
+
+      <div class="spell-desc" style="margin-bottom:10px"><b>CORS</b> &mdash; <span data-i18n="access.cors.desc">Permite consultar la API desde webapps externas</span></div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);margin-bottom:16px;">
+        <button id="corsToggle" onclick="toggleCors()" style="font-family:var(--font-heading);font-size:13px;letter-spacing:0.08em;padding:8px 18px;min-height:44px;cursor:pointer;border:1px solid var(--border);background:var(--gold-bg);color:var(--gold-dim);transition:all 0.2s;" data-i18n="access.cors.loading">...</button>
+        <span id="corsStatus" style="font-family:var(--font-mono);font-size:13px;color:var(--text-dim);"></span>
+      </div>
+
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example"># Ejemplo de uso desde webapp externa:
 fetch("http://tu-nodo:3200/api/price/latest")
   .then(r => r.json())
   .then(d => console.log(d.price_usd))</div></div>
@@ -355,6 +358,7 @@ const I18N = {
     'hero.tagline1': 'Precio calculado en tu propio nodo. Sin consultas externas.',
     'hero.tagline2': 'Parece magia pero son visiones de la acción humana en la cadena de bloques.',
     'hero.perbtc': 'por Bitcoin', 'hero.block': 'Bloque',
+    'hero.disclaimer': 'Precio estimado con un margen de error del 0.11%. No es asesoría financiera.',
     'chart.title': 'Historial de precio',
     'search.title': 'Consultar el pasado', 'search.hint': 'Busca precios históricos por altura de bloque o fecha',
     'search.placeholder': 'Altura de bloque (ej. 800000) o fecha (2024-01-15)', 'search.btn': 'Consultar',
@@ -372,8 +376,13 @@ const I18N = {
     'sync.syncing': 'sincronizando', 'sync.synced': 'sincronizado',
     'footer.credits': '<a href="https://github.com/lunaticoin/el-oraculo" target="_blank" rel="noopener noreferrer">El Oráculo</a>, basado en el genial trabajo de <a href="https://x.com/_nym21_" target="_blank" rel="noopener noreferrer">nym21</a> en <a href="https://github.com/bitcoinresearchkit/brk" target="_blank" rel="noopener noreferrer">BRK</a> y de las visiones de <a href="https://x.com/SteveSimple" target="_blank" rel="noopener noreferrer">Simple Steve</a>',
     'access.title': 'ACCESO REMOTO',
-    'access.tor': '<b>Tor:</b> Umbrel crea automáticamente un hidden service (.onion) para El Oráculo. Encuéntralo en <code>Umbrel → Settings → Tor</code>. Permite consultar la API desde cualquier lugar sin abrir puertos.',
-    'access.cors': '<b>CORS:</b> Para consultar la API desde una webapp externa (ej. tu propia web), activa CORS editando <code>docker-compose.yml</code> y cambiando <code>CORS_ENABLED</code> a <code>"true"</code>. Luego reinicia la app desde Umbrel.',
+    'access.cors.desc': 'Permite consultar la API desde webapps externas',
+    'access.cors.enable': 'Activar CORS', 'access.cors.disable': 'Desactivar CORS',
+    'access.cors.on': 'CORS activado — cualquier webapp puede consultar la API',
+    'access.cors.off': 'CORS desactivado',
+    'access.cors.loading': '...',
+    'access.tor.loading': 'Buscando dirección .onion...',
+    'access.tor.unavailable': 'Tor no disponible. Activa Tor en Umbrel → Settings.',
   },
   en: {
     'nav.visions': 'Visions', 'nav.dashboard': 'Dashboard', 'nav.grimoire': 'Grimoire', 'nav.apidocs': 'API Docs',
@@ -381,6 +390,7 @@ const I18N = {
     'hero.tagline1': 'Price computed on your own node. No external queries.',
     'hero.tagline2': 'It looks like magic but these are visions of human action on the blockchain.',
     'hero.perbtc': 'per Bitcoin', 'hero.block': 'Block',
+    'hero.disclaimer': 'Estimated price with a 0.11% margin of error. Not financial advice.',
     'chart.title': 'Price History',
     'search.title': 'Scry the past', 'search.hint': 'Look up historical prices by block height or date',
     'search.placeholder': 'Block height (e.g. 800000) or date (2024-01-15)', 'search.btn': 'Look Up',
@@ -398,8 +408,13 @@ const I18N = {
     'sync.syncing': 'syncing', 'sync.synced': 'synced',
     'footer.credits': '<a href="https://github.com/lunaticoin/el-oraculo" target="_blank" rel="noopener noreferrer">El Oráculo</a>, based on the brilliant work of <a href="https://x.com/_nym21_" target="_blank" rel="noopener noreferrer">nym21</a> on <a href="https://github.com/bitcoinresearchkit/brk" target="_blank" rel="noopener noreferrer">BRK</a> and the visions of <a href="https://x.com/SteveSimple" target="_blank" rel="noopener noreferrer">Simple Steve</a>',
     'access.title': 'REMOTE ACCESS',
-    'access.tor': '<b>Tor:</b> Umbrel automatically creates a hidden service (.onion) for El Oráculo. Find it in <code>Umbrel → Settings → Tor</code>. Query the API from anywhere without opening ports.',
-    'access.cors': '<b>CORS:</b> To query the API from an external webapp, enable CORS by editing <code>docker-compose.yml</code> and setting <code>CORS_ENABLED</code> to <code>"true"</code>. Then restart the app from Umbrel.',
+    'access.cors.desc': 'Allow API queries from external webapps',
+    'access.cors.enable': 'Enable CORS', 'access.cors.disable': 'Disable CORS',
+    'access.cors.on': 'CORS enabled — any webapp can query the API',
+    'access.cors.off': 'CORS disabled',
+    'access.cors.loading': '...',
+    'access.tor.loading': 'Looking for .onion address...',
+    'access.tor.unavailable': 'Tor not available. Enable Tor in Umbrel → Settings.',
   }
 };
 
@@ -639,6 +654,58 @@ async function doSearch() {
 document.getElementById('searchBtn').addEventListener('click', doSearch);
 document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 
+// ─── CORS TOGGLE ───
+async function loadCorsStatus() {
+  try {
+    const data = await fetchJSON('/api/settings/cors');
+    updateCorsUI(data.enabled);
+  } catch(e) { console.error(e); }
+}
+
+function updateCorsUI(enabled) {
+  const btn = document.getElementById('corsToggle');
+  const status = document.getElementById('corsStatus');
+  if (enabled) {
+    btn.textContent = t('access.cors.disable');
+    btn.style.background = 'rgba(90,154,106,0.15)';
+    btn.style.color = 'var(--emerald)';
+    btn.style.borderColor = 'rgba(90,154,106,0.3)';
+    status.textContent = t('access.cors.on');
+    status.style.color = 'var(--emerald)';
+  } else {
+    btn.textContent = t('access.cors.enable');
+    btn.style.background = 'var(--gold-bg)';
+    btn.style.color = 'var(--gold-dim)';
+    btn.style.borderColor = 'var(--border)';
+    status.textContent = t('access.cors.off');
+    status.style.color = 'var(--text-dim)';
+  }
+}
+
+async function toggleCors() {
+  try {
+    const r = await fetch(API + '/api/settings/cors', { method: 'POST' });
+    const data = await r.json();
+    updateCorsUI(data.enabled);
+  } catch(e) { console.error(e); }
+}
+
+// ─── TOR ADDRESS ───
+async function loadTorAddress() {
+  try {
+    const data = await fetchJSON('/api/tor');
+    const el = document.getElementById('torStatus');
+    if (data.available && data.address) {
+      el.innerHTML = '<span style="color:var(--emerald);">&#10003;</span> <code>' + data.address + '</code>';
+      el.style.borderColor = 'rgba(90,154,106,0.3)';
+    } else {
+      el.textContent = t('access.tor.unavailable');
+    }
+  } catch(e) {
+    document.getElementById('torStatus').textContent = t('access.tor.unavailable');
+  }
+}
+
 function copyExample(btn) {
   const code = btn.nextElementSibling.textContent.split('\n')[0].trim();
   navigator.clipboard.writeText(code).then(() => {
@@ -651,7 +718,7 @@ let resizeTimer;
 window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if(chartData.length) drawChart(); }, 100); });
 
 async function init() {
-  await Promise.all([loadHealth(), loadLatest(), loadChart()]);
+  await Promise.all([loadHealth(), loadLatest(), loadChart(), loadCorsStatus(), loadTorAddress()]);
   await load24hChange();
   setInterval(async () => { await Promise.all([loadLatest(), loadHealth()]); await load24hChange(); }, 30000);
   setInterval(loadChart, 300000);
