@@ -43,7 +43,7 @@ struct Args {
     data_dir: String,
 
     /// HTTP server port
-    #[arg(long, env = "PORT", default_value = "3200")]
+    #[arg(long, env = "PORT", default_value = "7777")]
     port: u16,
 
     /// Enable CORS for external API access

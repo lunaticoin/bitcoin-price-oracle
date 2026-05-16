@@ -255,13 +255,13 @@ body::before {
 
   <div class="api-view" id="view-api">
     <div class="grimoire-intro" data-i18n-html="api.intro">
-      <b>El Grimorio</b> (Documentación API) &mdash; estos endpoints sirven precios BTC/USD derivados enteramente de la blockchain, mediante el algoritmo <code>brk_oracle</code>. Sin feeds de exchanges. Sin APIs externas. Revelación pura on-chain. Puerto <b>3200</b> por defecto.
+      <b>El Grimorio</b> (Documentación API) &mdash; estos endpoints sirven precios BTC/USD derivados enteramente de la blockchain, mediante el algoritmo <code>brk_oracle</code>. Sin feeds de exchanges. Sin APIs externas. Revelación pura on-chain. Puerto <b>7777</b> por defecto.
     </div>
 
     <div class="spell-block">
       <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/latest</span></div>
       <div class="spell-desc" data-i18n="api.latest">Devuelve el precio en el último bloque sincronizado.</div>
-      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl http://umbrel.local:3200/api/price/latest
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl http://umbrel.local:7777/api/price/latest
 
 {"height":942928,"price_usd":68260.19,"timestamp":1774874850}</div></div>
     </div>
@@ -269,7 +269,7 @@ body::before {
     <div class="spell-block">
       <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/{height}</span></div>
       <div class="spell-desc" data-i18n="api.height">Devuelve el precio en una altura de bloque específica.</div>
-      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl http://umbrel.local:3200/api/price/800000
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl http://umbrel.local:7777/api/price/800000
 
 {"height":800000,"price_usd":29806.73,"timestamp":1690168629}</div></div>
     </div>
@@ -277,7 +277,7 @@ body::before {
     <div class="spell-block">
       <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/date/{YYYY-MM-DD}</span></div>
       <div class="spell-desc" data-i18n="api.date">Devuelve el precio en el primer bloque de la fecha UTC indicada.</div>
-      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl http://umbrel.local:3200/api/price/date/2024-01-15
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl http://umbrel.local:7777/api/price/date/2024-01-15
 
 {"date":"2024-01-15","height":825000,"price_usd":42853.0,"timestamp":1705276800}</div></div>
     </div>
@@ -285,7 +285,7 @@ body::before {
     <div class="spell-block">
       <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/chart?points={N}</span></div>
       <div class="spell-desc" data-i18n="api.chart">Historial de precios muestreado. Devuelve N puntos equidistantes. Por defecto: 600. Máximo: 2000.</div>
-      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl "http://umbrel.local:3200/api/price/chart?points=100"
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl "http://umbrel.local:7777/api/price/chart?points=100"
 
 [{"height":550000,"price_usd":8432.10,"timestamp":...}, ...]</div></div>
     </div>
@@ -293,7 +293,7 @@ body::before {
     <div class="spell-block">
       <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/api/price/range?from={}&amp;to={}</span></div>
       <div class="spell-desc" data-i18n="api.range">Precios para un rango de bloques o fechas (AAAA-MM-DD). Máximo 10.000 por petición.</div>
-      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl "http://umbrel.local:3200/api/price/range?from=800000&to=800010"
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl "http://umbrel.local:7777/api/price/range?from=800000&to=800010"
 
 [{"height":800000,"price_usd":29806.73,"timestamp":1690168629},...]</div></div>
     </div>
@@ -301,7 +301,7 @@ body::before {
     <div class="spell-block">
       <div class="spell-header"><span class="spell-method">GET</span><span class="spell-path">/health</span></div>
       <div class="spell-desc" data-i18n="api.health">Estado de sincronización y progreso.</div>
-      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl http://umbrel.local:3200/health
+      <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example">curl http://umbrel.local:7777/health
 
 {"synced_height":942928,"chain_tip":942930,"syncing":false,"progress_percent":99.99}</div></div>
     </div>
@@ -332,7 +332,7 @@ body::before {
       </div>
 
       <div class="spell-example-wrap"><button class="copy-btn" onclick="copyExample(this)" data-i18n="copy">Copiar</button><div class="spell-example"># Ejemplo de uso desde webapp externa:
-fetch("http://tu-nodo:3200/api/price/latest")
+fetch("http://tu-nodo:7777/api/price/latest")
   .then(r => r.json())
   .then(d => console.log(d.price_usd))</div></div>
     </div>
@@ -368,7 +368,7 @@ const I18N = {
     'search.placeholder': 'Altura de bloque (ej. 800000) o fecha (2024-01-15)', 'search.btn': 'Consultar',
     'search.format': 'Introduce una altura de bloque numérica o una fecha en formato AAAA-MM-DD',
     'search.loading': 'Consultando al oráculo...', 'search.error': 'Introduce una altura de bloque o fecha (AAAA-MM-DD)',
-    'api.intro': '<b>El Grimorio</b> (Documentación API) &mdash; estos endpoints sirven precios BTC/USD derivados enteramente de la blockchain, mediante el algoritmo <code>brk_oracle</code>. Sin feeds de exchanges. Sin APIs externas. Revelación pura on-chain. Puerto <b>3200</b> por defecto.',
+    'api.intro': '<b>El Grimorio</b> (Documentación API) &mdash; estos endpoints sirven precios BTC/USD derivados enteramente de la blockchain, mediante el algoritmo <code>brk_oracle</code>. Sin feeds de exchanges. Sin APIs externas. Revelación pura on-chain. Puerto <b>7777</b> por defecto.',
     'api.latest': 'Devuelve el precio en el último bloque sincronizado.',
     'api.height': 'Devuelve el precio en una altura de bloque específica.',
     'api.date': 'Devuelve el precio en el primer bloque de la fecha UTC indicada.',
@@ -401,7 +401,7 @@ const I18N = {
     'search.placeholder': 'Block height (e.g. 800000) or date (2024-01-15)', 'search.btn': 'Look Up',
     'search.format': 'Enter a numeric block height or a date in YYYY-MM-DD format',
     'search.loading': 'Consulting the oracle...', 'search.error': 'Enter a block height or date (YYYY-MM-DD)',
-    'api.intro': '<b>The Grimoire</b> (API Documentation) &mdash; these endpoints serve BTC/USD prices divined entirely from the blockchain, via the <code>brk_oracle</code> algorithm. No exchange feeds. No external APIs. Pure on-chain revelation. Port <b>3200</b> by default.',
+    'api.intro': '<b>The Grimoire</b> (API Documentation) &mdash; these endpoints serve BTC/USD prices divined entirely from the blockchain, via the <code>brk_oracle</code> algorithm. No exchange feeds. No external APIs. Pure on-chain revelation. Port <b>7777</b> by default.',
     'api.latest': 'Returns the price at the most recently synced block.',
     'api.height': 'Returns the price at a specific block height.',
     'api.date': 'Returns the price at the first block on or after the given UTC date.',

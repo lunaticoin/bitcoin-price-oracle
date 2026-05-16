@@ -8,7 +8,7 @@ services:
       PROXY_AUTH_ADD: "false"
 
   oracle:
-    image: ghcr.io/lunaticoin/bitcoin-price-oracle:v0.1.11@sha256:8434f8ec2b5a2b66f2d471a7816e79671236abe20f730ffe2e3f2e9895167958
+    image: ghcr.io/lunaticoin/bitcoin-price-oracle:v0.1.12@sha256:PLACEHOLDER_BUILD_AND_REPLACE
     init: true
     restart: on-failure
     stop_grace_period: 1m
@@ -22,7 +22,7 @@ services:
       RPC_PASS: ${APP_BITCOIN_RPC_PASS}
       BLOCKS_DIR: /bitcoin/blocks
       DATA_DIR: /data
-      PORT: "3200"
+      PORT: "7777"
       CORS_ENABLED: "false"
       APP_HIDDEN_SERVICE: ${APP_HIDDEN_SERVICE}
     networks:

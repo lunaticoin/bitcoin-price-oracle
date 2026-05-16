@@ -25,6 +25,6 @@ RUN printf '#!/bin/sh\nset -e\nchown -R oracle:oracle /data\nexec su -s /bin/sh 
 
 RUN mkdir -p /data
 
-EXPOSE 3200
+EXPOSE 7777
 
 ENTRYPOINT ["entrypoint.sh"]
